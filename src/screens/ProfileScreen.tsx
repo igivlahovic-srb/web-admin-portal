@@ -1,12 +1,17 @@
 import React from "react";
 import { View, Text, Pressable, ScrollView, Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation/RootNavigator";
 import { useAuthStore } from "../state/authStore";
 import { useServiceStore } from "../state/serviceStore";
 
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
 export default function ProfileScreen() {
+  const navigation = useNavigation<NavigationProp>();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const tickets = useServiceStore((s) => s.tickets);
@@ -162,6 +167,21 @@ export default function ProfileScreen() {
             </View>
           </View>
         </View>
+
+        {/* Settings Button (Super User only) */}
+        {isSuperUser && (
+          <View className="px-6 pb-4">
+            <Pressable
+              onPress={() => navigation.navigate("Settings")}
+              className="bg-blue-50 border border-blue-200 rounded-2xl px-6 py-4 flex-row items-center justify-center gap-3 active:opacity-70"
+            >
+              <Ionicons name="settings-outline" size={24} color="#3B82F6" />
+              <Text className="text-blue-600 text-base font-bold">
+                Web Admin Sync
+              </Text>
+            </Pressable>
+          </View>
+        )}
 
         {/* Logout Button */}
         <View className="px-6 pb-8">

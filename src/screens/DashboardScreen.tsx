@@ -1,10 +1,8 @@
 import React from "react";
 import { View, Text, Pressable, ScrollView } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { CompositeNavigationProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { RootStackParamList, MainTabParamList } from "../navigation/RootNavigator";
@@ -12,10 +10,8 @@ import { useAuthStore } from "../state/authStore";
 import { useServiceStore } from "../state/serviceStore";
 import { format } from "date-fns";
 
-type DashboardNavigationProp = CompositeNavigationProp<
-  BottomTabNavigationProp<MainTabParamList, "Dashboard">,
-  NativeStackNavigationProp<RootStackParamList>
->;
+type DashboardNavigationProp = BottomTabNavigationProp<MainTabParamList, "Dashboard"> &
+  NativeStackNavigationProp<RootStackParamList>;
 
 export default function DashboardScreen() {
   const navigation = useNavigation<DashboardNavigationProp>();

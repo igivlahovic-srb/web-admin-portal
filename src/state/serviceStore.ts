@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { ServiceTicket, Operation, SparePart } from "../types";
+import webAdminAPI from "../api/web-admin-sync";
 
 interface ServiceState {
   tickets: ServiceTicket[];
@@ -12,9 +13,10 @@ interface ServiceState {
   addSparePartToCurrentTicket: (sparePart: SparePart) => void;
   removeOperationFromCurrentTicket: (operationId: string) => void;
   removeSparePartFromCurrentTicket: (sparePartId: string) => void;
+  syncToWeb: () => Promise<boolean>;
 }
 
-export const useServiceStore = create<ServiceState>((set) => ({
+export const useServiceStore = create<ServiceState>((set, get) => ({
   tickets: [],
   currentTicket: null,
   addTicket: (ticket) =>
@@ -98,4 +100,14 @@ export const useServiceStore = create<ServiceState>((set) => ({
         ),
       };
     }),
+  syncToWeb: async () => {
+    try {
+      const tickets = get().tickets;
+      const result = await webAdminAPI.syncTickets(tickets);
+      return result.success;
+    } catch (error) {
+      console.error("Failed to sync tickets to web:", error);
+      return false;
+    }
+  },
 }));

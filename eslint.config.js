@@ -13,6 +13,8 @@ module.exports = defineConfig([
       "patches/*",
       "bun.lock",
       "eslint.config.js",
+      "COMPLETE_WEB_SERVER.js",
+      "WEB_*.md",
     ],
     settings: {
       "import/resolver": {

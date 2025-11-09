@@ -2,16 +2,12 @@ import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useServiceStore } from "../state/serviceStore";
-import { useAuthStore } from "../state/authStore";
 import { format } from "date-fns";
 import { ServiceTicket } from "../types";
 
 export default function HistoryScreen() {
   const tickets = useServiceStore((s) => s.tickets);
-  const user = useAuthStore((s) => s.user);
   const [filter, setFilter] = useState<"all" | "completed" | "in_progress">("all");
-
-  const isSuperUser = user?.role === "super_user";
 
   const filteredTickets = tickets.filter((ticket) => {
     if (filter === "all") return true;

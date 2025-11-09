@@ -2,21 +2,24 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { User } from "../types";
+import webAdminAPI from "../api/web-admin-sync";
 
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
-  allUsers: Array<User & { password: string }>;
+  allUsers: (User & { password: string })[];
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   addUser: (user: User & { password: string }) => void;
   updateUser: (id: string, updates: Partial<User>) => void;
   deleteUser: (id: string) => void;
   toggleUserActive: (id: string) => void;
+  syncToWeb: () => Promise<boolean>;
+  fetchFromWeb: () => Promise<boolean>;
 }
 
 // Mock users for demo - in production, this would call an API
-const INITIAL_USERS: Array<User & { password: string }> = [
+const INITIAL_USERS: (User & { password: string })[] = [
   {
     id: "1",
     username: "admin",
@@ -93,6 +96,29 @@ export const useAuthStore = create<AuthState>()(
             u.id === id ? { ...u, isActive: !u.isActive } : u
           ),
         }));
+      },
+      syncToWeb: async () => {
+        try {
+          const users = get().allUsers;
+          const result = await webAdminAPI.syncUsers(users);
+          return result.success;
+        } catch (error) {
+          console.error("Failed to sync users to web:", error);
+          return false;
+        }
+      },
+      fetchFromWeb: async () => {
+        try {
+          const result = await webAdminAPI.fetchUsers();
+          if (result.success && result.data && result.data.users) {
+            set({ allUsers: result.data.users });
+            return true;
+          }
+          return false;
+        } catch (error) {
+          console.error("Failed to fetch users from web:", error);
+          return false;
+        }
       },
     }),
     {

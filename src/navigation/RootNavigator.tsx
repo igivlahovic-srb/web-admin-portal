@@ -12,11 +12,13 @@ import ServiceTicketScreen from "../screens/ServiceTicketScreen";
 import HistoryScreen from "../screens/HistoryScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import UserManagementScreen from "../screens/UserManagementScreen";
+import SettingsScreen from "../screens/SettingsScreen";
 
 export type RootStackParamList = {
   MainTabs: undefined;
   Scanner: undefined;
   ServiceTicket: undefined;
+  Settings: undefined;
 };
 
 export type MainTabParamList = {
@@ -138,6 +140,15 @@ export default function RootNavigator() {
         options={{
           headerShown: true,
           title: "Servisni nalog",
+          headerBackTitle: "Nazad",
+        }}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          headerShown: true,
+          title: "Podešavanja",
           headerBackTitle: "Nazad",
         }}
       />
