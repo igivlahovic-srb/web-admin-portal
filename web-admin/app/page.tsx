@@ -61,7 +61,7 @@ export default function LoginPage() {
             </svg>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Water Service
+            La Fantana WHS
           </h1>
           <p className="text-gray-600">Admin Panel</p>
         </div>
@@ -162,7 +162,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-gray-500 text-sm mt-6">
-          Water Service Management System v1.0
+          La Fantana WHS Management System v1.0
         </p>
       </div>
     </div>

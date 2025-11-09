@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Water Service Admin Panel",
-  description: "Admin panel for water service management",
+  title: "La Fantana WHS Admin Panel",
+  description: "Admin panel for La Fantana water heating system management",
 };
 
 export default function RootLayout({
