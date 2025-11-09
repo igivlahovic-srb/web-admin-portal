@@ -9,9 +9,11 @@ interface ConfigState {
   spareParts: SparePartTemplate[];
   lastConfigSync: Date | null;
   isLoading: boolean;
+  isConnected: boolean;
   setOperations: (operations: OperationTemplate[]) => void;
   setSpareParts: (spareParts: SparePartTemplate[]) => void;
   fetchConfig: () => Promise<boolean>;
+  checkConnection: () => Promise<boolean>;
 }
 
 export const useConfigStore = create<ConfigState>()(
@@ -21,10 +23,41 @@ export const useConfigStore = create<ConfigState>()(
       spareParts: [],
       lastConfigSync: null,
       isLoading: false,
+      isConnected: false,
 
       setOperations: (operations) => set({ operations }),
 
       setSpareParts: (spareParts) => set({ spareParts }),
+
+      checkConnection: async () => {
+        try {
+          const apiUrl = useSyncStore.getState().apiUrl;
+
+          // If no API URL is configured, not connected
+          if (!apiUrl || apiUrl === "http://192.168.1.100:3000") {
+            set({ isConnected: false });
+            return false;
+          }
+
+          // Try to ping the server
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+          const response = await fetch(`${apiUrl}/api/config/operations`, {
+            method: "HEAD",
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+
+          const connected = response.ok;
+          set({ isConnected: connected });
+          return connected;
+        } catch (error) {
+          set({ isConnected: false });
+          return false;
+        }
+      },
 
       fetchConfig: async () => {
         set({ isLoading: true });
@@ -90,6 +123,7 @@ export const useConfigStore = create<ConfigState>()(
             spareParts: partsData.data.spareParts || [],
             lastConfigSync: new Date(),
             isLoading: false,
+            isConnected: true,
           });
 
           return true;

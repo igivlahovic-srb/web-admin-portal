@@ -16,6 +16,7 @@ import { useServiceStore } from "../state/serviceStore";
 import { useConfigStore } from "../state/configStore";
 import { Operation, SparePart } from "../types";
 import { LinearGradient } from "expo-linear-gradient";
+import ConnectionIndicator from "../components/ConnectionIndicator";
 
 export default function ServiceTicketScreen() {
   const navigation = useNavigation();
@@ -123,6 +124,9 @@ export default function ServiceTicketScreen() {
 
   return (
     <View className="flex-1 bg-gray-50">
+      {/* Connection Indicator */}
+      <ConnectionIndicator />
+
       <ScrollView className="flex-1">
         {/* Device Info Card */}
         <View className="bg-white px-6 py-4 border-b border-gray-200">

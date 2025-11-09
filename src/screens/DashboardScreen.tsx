@@ -9,6 +9,7 @@ import { RootStackParamList, MainTabParamList } from "../navigation/RootNavigato
 import { useAuthStore } from "../state/authStore";
 import { useServiceStore } from "../state/serviceStore";
 import { format } from "date-fns";
+import ConnectionIndicator from "../components/ConnectionIndicator";
 
 type DashboardNavigationProp = BottomTabNavigationProp<MainTabParamList, "Dashboard"> &
   NativeStackNavigationProp<RootStackParamList>;
@@ -34,6 +35,9 @@ export default function DashboardScreen() {
 
   return (
     <View className="flex-1 bg-gray-50">
+      {/* Connection Indicator */}
+      <ConnectionIndicator />
+
       <ScrollView className="flex-1">
         {/* Welcome Header with Gradient */}
         <LinearGradient
