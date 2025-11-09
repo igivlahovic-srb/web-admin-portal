@@ -4,10 +4,10 @@ import { dataStore } from "../../../../../lib/dataStore";
 // PUT - Update operation
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
 
     const operations = dataStore.getOperations();
@@ -38,10 +38,10 @@ export async function PUT(
 // DELETE - Delete operation
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const operations = dataStore.getOperations();
     const operation = operations.find((op) => op.id === id);

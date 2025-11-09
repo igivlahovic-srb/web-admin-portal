@@ -4,10 +4,10 @@ import { dataStore } from "../../../../../lib/dataStore";
 // PUT - Update spare part
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
 
     const spareParts = dataStore.getSpareParts();
@@ -38,10 +38,10 @@ export async function PUT(
 // DELETE - Delete spare part
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const spareParts = dataStore.getSpareParts();
     const sparePart = spareParts.find((sp) => sp.id === id);
