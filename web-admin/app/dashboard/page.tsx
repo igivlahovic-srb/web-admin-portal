@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { User, ServiceTicket } from "../../types";
 import { format } from "date-fns";
 import UpdateNotification from "../../components/UpdateNotification";
+import Navigation from "../../components/Navigation";
 
 export default function DashboardPage() {
   const [user, setUser] = useState<Omit<User, "password"> | null>(null);
@@ -155,36 +156,7 @@ export default function DashboardPage() {
       </header>
 
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex gap-8">
-            <button
-              onClick={() => router.push("/dashboard")}
-              className="px-4 py-4 text-blue-600 border-b-2 border-blue-600 font-semibold"
-            >
-              Početna
-            </button>
-            <button
-              onClick={() => router.push("/dashboard/users")}
-              className="px-4 py-4 text-gray-600 hover:text-gray-900 font-medium"
-            >
-              Korisnici
-            </button>
-            <button
-              onClick={() => router.push("/dashboard/services")}
-              className="px-4 py-4 text-gray-600 hover:text-gray-900 font-medium"
-            >
-              Servisi
-            </button>
-            <button
-              onClick={() => router.push("/configuration")}
-              className="px-4 py-4 text-gray-600 hover:text-gray-900 font-medium"
-            >
-              Konfiguracija
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navigation />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">

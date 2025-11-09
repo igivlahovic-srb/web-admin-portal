@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { OperationTemplate, SparePartTemplate } from "../../types";
+import Navigation from "../../components/Navigation";
 
 export default function ConfigurationPage() {
   const router = useRouter();
@@ -352,10 +353,13 @@ export default function ConfigurationPage() {
         </div>
       </div>
 
+      {/* Navigation */}
+      <Navigation />
+
       {/* Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         {/* Back to Dashboard Button */}
-        <div className="mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <button
             onClick={() => router.push("/dashboard")}
             className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 rounded-xl font-medium transition-colors border border-gray-200 shadow-sm"
@@ -374,6 +378,40 @@ export default function ConfigurationPage() {
               />
             </svg>
             Vrati se na Dashboard
+          </button>
+
+          <button
+            onClick={async () => {
+              if (confirm("Da li želite da pošaljete konfiguraciju na sve mobilne uređaje?")) {
+                try {
+                  const response = await fetch("/api/config/sync", { method: "POST" });
+                  const data = await response.json();
+                  if (data.success) {
+                    alert("Konfiguracija uspešno poslata na sve mobilne uređaje!");
+                  } else {
+                    alert("Greška: " + data.message);
+                  }
+                } catch (error) {
+                  alert("Greška prilikom slanja konfiguracije");
+                }
+              }
+            }}
+            className="flex items-center gap-2 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-colors shadow-sm"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+              />
+            </svg>
+            Pošalji na Mobilne Uređaje
           </button>
         </div>
 
