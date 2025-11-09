@@ -103,9 +103,15 @@ class WebAdminAPI {
   // Test connection to web admin panel
   async testConnection(): Promise<SyncResponse> {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
       const response = await fetch(`${this.apiUrl}/api/health`, {
         method: 'GET',
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -113,10 +119,23 @@ class WebAdminAPI {
 
       return { success: true, message: 'Connection successful' };
     } catch (error) {
-      console.error('Error testing connection:', error);
+      // Silent error - no console.error to avoid confusing users
+      // This is expected when web panel is not running
+      let message = 'Connection failed';
+
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          message = 'Connection timeout - check if web panel is running';
+        } else if (error.message.includes('Network request failed')) {
+          message = 'Cannot reach web panel - check URL and network';
+        } else {
+          message = error.message;
+        }
+      }
+
       return {
         success: false,
-        message: error instanceof Error ? error.message : 'Connection failed',
+        message,
       };
     }
   }

@@ -128,7 +128,8 @@ export const useConfigStore = create<ConfigState>()(
 
           return true;
         } catch (error) {
-          console.error("Error fetching config:", error);
+          // Silent error - this is expected when web panel is not running
+          // Application continues to work with default/cached data
 
           // Fallback to default data if fetch fails
           set({
