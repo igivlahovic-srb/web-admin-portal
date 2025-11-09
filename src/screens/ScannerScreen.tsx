@@ -38,6 +38,7 @@ export default function ScannerScreen() {
 
   const addTicket = useServiceStore((s) => s.addTicket);
   const setCurrentTicket = useServiceStore((s) => s.setCurrentTicket);
+  const tickets = useServiceStore((s) => s.tickets);
   const user = useAuthStore((s) => s.user);
 
   if (!permission) {
@@ -57,7 +58,7 @@ export default function ScannerScreen() {
             Potreban pristup kameri
           </Text>
           <Text className="text-gray-400 text-base text-center mb-8">
-            Da biste skenirali QR kod water aparata, potreban je pristup kameri.
+            Da biste skenirali aparat, potreban je pristup kameri.
           </Text>
           <Pressable
             onPress={requestPermission}
@@ -74,6 +75,24 @@ export default function ScannerScreen() {
 
   const handleBarCodeScanned = ({ data }: { type: string; data: string }) => {
     if (scanned || processing) return;
+
+    // Check if there's already an active ticket with this device code
+    const existingActiveTicket = tickets.find(
+      (t) => t.deviceCode === data && t.status === "in_progress"
+    );
+
+    if (existingActiveTicket) {
+      // If ticket already exists, just navigate to it
+      setScanned(true);
+      setProcessing(true);
+      setCurrentTicket(existingActiveTicket);
+      setTimeout(() => {
+        setProcessing(false);
+        setScanned(false);
+        navigation.replace("ServiceTicket");
+      }, 300);
+      return;
+    }
 
     setScanned(true);
     setProcessing(true);
@@ -106,6 +125,18 @@ export default function ScannerScreen() {
   };
 
   const createTicketWithCode = (code: string) => {
+    // Check if there's already an active ticket with this device code
+    const existingActiveTicket = tickets.find(
+      (t) => t.deviceCode === code && t.status === "in_progress"
+    );
+
+    if (existingActiveTicket) {
+      // If ticket already exists, just navigate to it
+      setCurrentTicket(existingActiveTicket);
+      navigation.replace("ServiceTicket");
+      return;
+    }
+
     const newTicket: ServiceTicket = {
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       deviceCode: code,
@@ -200,7 +231,7 @@ export default function ScannerScreen() {
           </View>
 
           <Text className="text-white text-lg font-medium mt-8 text-center px-8">
-            Skenirajte kod water aparata
+            Skenirajte aparat
           </Text>
           <Text className="text-gray-300 text-sm mt-2 text-center px-8">
             Podržava QR, EAN13, EAN8 i 2D kodove
