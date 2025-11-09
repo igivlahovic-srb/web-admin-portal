@@ -85,6 +85,18 @@ export default function ServiceTicketScreen() {
   }
 
   const handleAddOperation = (op: { name: string; description?: string }) => {
+    // Check if operation already exists in current ticket
+    const alreadyExists = currentTicket.operations.some(
+      (existingOp) => existingOp.name === op.name
+    );
+
+    if (alreadyExists) {
+      // Operation already added, close modal
+      setShowOperationsModal(false);
+      setOperationSearchQuery("");
+      return;
+    }
+
     const operation: Operation = {
       id: Date.now().toString(),
       name: op.name,
@@ -94,6 +106,26 @@ export default function ServiceTicketScreen() {
   };
 
   const handleAddSparePart = (part: { name: string }) => {
+    // Check if spare part already exists in current ticket
+    const existingPart = currentTicket.spareParts.find(
+      (existingSp) => existingSp.name === part.name
+    );
+
+    if (existingPart) {
+      // Spare part already exists, just increase quantity
+      const quantity = sparePartQuantity[part.name] || 1;
+      const updatedPart: SparePart = {
+        ...existingPart,
+        quantity: existingPart.quantity + quantity,
+      };
+
+      // Update the existing part instead of adding new
+      removeSparePartFromCurrentTicket(existingPart.id);
+      addSparePartToCurrentTicket(updatedPart);
+      setSparePartQuantity({ ...sparePartQuantity, [part.name]: 1 });
+      return;
+    }
+
     const quantity = sparePartQuantity[part.name] || 1;
     const sparePart: SparePart = {
       id: Date.now().toString(),
@@ -365,31 +397,50 @@ export default function ServiceTicketScreen() {
                   </Text>
                 </View>
               ) : (
-                filteredOperations.map((op) => (
-                  <Pressable
-                    key={op.id}
-                    onPress={() => {
-                      handleAddOperation(op);
-                      setShowOperationsModal(false);
-                      setOperationSearchQuery("");
-                    }}
-                    className="bg-gray-50 rounded-xl p-4 active:bg-gray-100"
-                  >
-                    <View className="flex-row items-center justify-between mb-1">
-                      <Text className="text-blue-600 text-xs font-semibold">
-                        {op.code}
+                filteredOperations.map((op) => {
+                  const isAlreadyAdded = currentTicket.operations.some(
+                    (existingOp) => existingOp.name === op.name
+                  );
+
+                  return (
+                    <Pressable
+                      key={op.id}
+                      onPress={() => {
+                        handleAddOperation(op);
+                        setShowOperationsModal(false);
+                        setOperationSearchQuery("");
+                      }}
+                      disabled={isAlreadyAdded}
+                      className={`rounded-xl p-4 ${
+                        isAlreadyAdded
+                          ? "bg-gray-100 opacity-50"
+                          : "bg-gray-50 active:bg-gray-100"
+                      }`}
+                    >
+                      <View className="flex-row items-center justify-between mb-1">
+                        <Text className="text-blue-600 text-xs font-semibold">
+                          {op.code}
+                        </Text>
+                        {isAlreadyAdded && (
+                          <View className="flex-row items-center gap-1">
+                            <Ionicons name="checkmark-circle" size={16} color="#10B981" />
+                            <Text className="text-emerald-600 text-xs font-semibold">
+                              Dodato
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                      <Text className="text-gray-900 text-base font-semibold mb-1">
+                        {op.name}
                       </Text>
-                    </View>
-                    <Text className="text-gray-900 text-base font-semibold mb-1">
-                      {op.name}
-                    </Text>
-                    {op.description && (
-                      <Text className="text-gray-600 text-sm">
-                        {op.description}
-                      </Text>
-                    )}
-                  </Pressable>
-                ))
+                      {op.description && (
+                        <Text className="text-gray-600 text-sm">
+                          {op.description}
+                        </Text>
+                      )}
+                    </Pressable>
+                  );
+                })
               )}
             </View>
           </ScrollView>
@@ -465,59 +516,73 @@ export default function ServiceTicketScreen() {
                   </Text>
                 </View>
               ) : (
-                filteredSpareParts.map((part) => (
-                  <View
-                    key={part.id}
-                    className="bg-gray-50 rounded-xl p-4"
-                  >
-                    <View className="flex-row items-center justify-between mb-3">
-                      <View className="flex-1">
-                        <Text className="text-emerald-600 text-xs font-semibold mb-1">
-                          {part.code}
-                        </Text>
-                        <Text className="text-gray-900 text-base font-semibold">
-                          {part.name}
-                        </Text>
+                filteredSpareParts.map((part) => {
+                  const existingPart = currentTicket.spareParts.find(
+                    (sp) => sp.name === part.name
+                  );
+
+                  return (
+                    <View
+                      key={part.id}
+                      className="bg-gray-50 rounded-xl p-4"
+                    >
+                      <View className="flex-row items-center justify-between mb-3">
+                        <View className="flex-1">
+                          <Text className="text-emerald-600 text-xs font-semibold mb-1">
+                            {part.code}
+                          </Text>
+                          <Text className="text-gray-900 text-base font-semibold">
+                            {part.name}
+                          </Text>
+                          {existingPart && (
+                            <View className="flex-row items-center gap-1 mt-1">
+                              <Ionicons name="checkmark-circle" size={14} color="#10B981" />
+                              <Text className="text-emerald-600 text-xs">
+                                Trenutno: {existingPart.quantity} {part.unit}
+                              </Text>
+                            </View>
+                          )}
+                        </View>
                       </View>
-                    </View>
-                    <View className="flex-row items-center gap-3">
-                      <View className="flex-1 flex-row items-center bg-white rounded-lg px-4 py-2 border border-gray-200">
-                        <Text className="text-gray-500 text-sm mr-2">
-                          Količina:
-                        </Text>
-                        <TextInput
-                          className="flex-1 text-gray-900 text-base"
-                          keyboardType="number-pad"
-                          value={(
-                            sparePartQuantity[part.name] || 1
-                          ).toString()}
-                          onChangeText={(text) => {
-                            const qty = parseInt(text) || 1;
-                            setSparePartQuantity({
-                              ...sparePartQuantity,
-                              [part.name]: qty,
-                            });
+                      <View className="flex-row items-center gap-3">
+                        <View className="flex-1 flex-row items-center bg-white rounded-lg px-4 py-2 border border-gray-200">
+                          <Text className="text-gray-500 text-sm mr-2">
+                            Količina:
+                          </Text>
+                          <TextInput
+                            className="flex-1 text-gray-900 text-base"
+                            keyboardType="number-pad"
+                            value={(
+                              sparePartQuantity[part.name] || 1
+                            ).toString()}
+                            onChangeText={(text) => {
+                              const qty = parseInt(text) || 1;
+                              setSparePartQuantity({
+                                ...sparePartQuantity,
+                                [part.name]: qty,
+                              });
+                            }}
+                          />
+                          <Text className="text-gray-500 text-sm ml-2">
+                            {part.unit}
+                          </Text>
+                        </View>
+                        <Pressable
+                          onPress={() => {
+                            handleAddSparePart(part);
+                            setShowSparePartsModal(false);
+                            setSparePartSearchQuery("");
                           }}
-                        />
-                        <Text className="text-gray-500 text-sm ml-2">
-                          {part.unit}
-                        </Text>
+                          className="bg-emerald-600 px-6 py-3 rounded-lg active:opacity-80"
+                        >
+                          <Text className="text-white text-sm font-semibold">
+                            {existingPart ? "+" : "Dodaj"}
+                          </Text>
+                        </Pressable>
                       </View>
-                      <Pressable
-                        onPress={() => {
-                          handleAddSparePart(part);
-                          setShowSparePartsModal(false);
-                          setSparePartSearchQuery("");
-                        }}
-                        className="bg-emerald-600 px-6 py-3 rounded-lg active:opacity-80"
-                      >
-                        <Text className="text-white text-sm font-semibold">
-                          Dodaj
-                        </Text>
-                      </Pressable>
                     </View>
-                  </View>
-                ))
+                  );
+                })
               )}
             </View>
           </ScrollView>
