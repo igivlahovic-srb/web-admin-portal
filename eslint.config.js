@@ -15,6 +15,9 @@ module.exports = defineConfig([
       "eslint.config.js",
       "COMPLETE_WEB_SERVER.js",
       "WEB_*.md",
+      "web-admin/**/*",
+      ".next/**/*",
+      "node_modules/**/*",
     ],
     settings: {
       "import/resolver": {

@@ -87,6 +87,16 @@ Water Service App je moderan sistem za upravljanje servisnim radovima na water a
   - Utrošeni delovi
 - **Informacije o nalogu**: Korisničko ime, ime, uloga
 - **Sigurna odjava**: Potvrda pre odjave
+- **Podešavanja (Settings)**: Pristup web admin sync funkcionalnosti
+
+### 🌐 Web Admin Sinhronizacija
+- **Sinhronizacija sa web panelom**: Prenos podataka na web admin panel
+  - Konfigurisanje URL-a web panela
+  - Testiranje konekcije
+  - Automatska ili manualna sinhronizacija
+  - Sinhronizacija korisnika i servisnih naloga
+- **Status praćenja**: Prikaz poslednje sinhronizacije
+- **Web Admin Panel**: Kompletna web aplikacija za pregled podataka (pokrenuta na portu 3000)
 
 ## 🎨 Dizajn
 
@@ -176,6 +186,49 @@ src/
    - Brisanje korisnika
 4. Uvid u sve servise svih servisera
 5. Analiza istorije i performansi
+6. **Sinhronizacija sa web admin panelom**:
+   - Pristup Settings ekranu iz Profila
+   - Konfiguracija URL-a web panela
+   - Sinhronizacija svih korisnika i servisa
+
+## 🌐 Web Admin Panel
+
+Water Service aplikacija sada dolazi sa **kompletnim web admin panelom** koji omogućava super administratorima da pregledaju sve podatke na desktop računaru!
+
+### Pokretanje Web Admin Panela
+
+```bash
+cd web-admin
+bun install
+bun dev
+```
+
+Web panel će biti dostupan na: `http://localhost:3000`
+
+### Sinhronizacija podataka
+
+1. **Pokrenite web admin panel** na računaru
+2. **U mobilnoj aplikaciji**:
+   - Prijavite se kao super admin (admin/admin123)
+   - Idite na **Profil → Settings** (ikonica zupčanika)
+   - Unesite URL web panela:
+     - Za lokalno testiranje: `http://localhost:3000`
+     - Za pristup iz telefona: `http://192.168.X.X:3000` (koristite IP adresu računara)
+   - Kliknite **"Testiraj konekciju"** da proverite da li radi
+   - Kliknite **"Sinhronizuj sada"** da prebacite sve podatke
+
+3. **Prijavite se na web panel**:
+   - Username: `admin`
+   - Password: `admin123`
+
+### Web Panel funkcionalnosti
+
+- **📊 Dashboard**: Statistika, aktivni servisi, današnji servisi
+- **👥 Korisnici**: Pregled svih korisnika, filtriranje po statusu
+- **🔧 Servisi**: Kompletna istorija svih servisa sa detaljima
+- **🔍 Detalji servisa**: Klik na servis pokazuje sve operacije i rezervne delove
+
+Više informacija u `web-admin/README.md`
 
 ## 📝 Napomene
 

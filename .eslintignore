@@ -1,0 +1,10 @@
+node_modules/
+.expo/
+.expo-shared/
+dist/
+build/
+*.bundle.js
+*.bundle.js.map
+web-build/
+*.log
+bun.lockb
