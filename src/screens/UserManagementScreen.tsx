@@ -29,20 +29,24 @@ export default function UserManagementScreen() {
   const [editingUser, setEditingUser] = useState<User & { password: string } | null>(null);
 
   // Form states
+  const [formCharismaId, setFormCharismaId] = useState("");
   const [formUsername, setFormUsername] = useState("");
   const [formPassword, setFormPassword] = useState("");
   const [formName, setFormName] = useState("");
   const [formRole, setFormRole] = useState<UserRole>("technician");
+  const [formDepot, setFormDepot] = useState("");
 
   const resetForm = () => {
+    setFormCharismaId("");
     setFormUsername("");
     setFormPassword("");
     setFormName("");
     setFormRole("technician");
+    setFormDepot("");
   };
 
   const handleAddUser = () => {
-    if (!formUsername.trim() || !formPassword.trim() || !formName.trim()) {
+    if (!formCharismaId.trim() || !formUsername.trim() || !formPassword.trim() || !formName.trim() || !formDepot.trim()) {
       Alert.alert("Greška", "Molimo popunite sva polja");
       return;
     }
@@ -53,12 +57,20 @@ export default function UserManagementScreen() {
       return;
     }
 
+    // Check if charismaId already exists
+    if (allUsers.find((u) => u.charismaId === formCharismaId.trim())) {
+      Alert.alert("Greška", "Charisma ID već postoji");
+      return;
+    }
+
     const newUser: User & { password: string } = {
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      charismaId: formCharismaId.trim(),
       username: formUsername.trim(),
       password: formPassword,
       name: formName.trim(),
       role: formRole,
+      depot: formDepot.trim(),
       isActive: true,
       createdAt: new Date(),
     };
@@ -72,13 +84,23 @@ export default function UserManagementScreen() {
   const handleEditUser = () => {
     if (!editingUser) return;
 
-    if (!formName.trim()) {
-      Alert.alert("Greška", "Ime ne može biti prazno");
+    if (!formCharismaId.trim() || !formName.trim() || !formDepot.trim()) {
+      Alert.alert("Greška", "Sva polja moraju biti popunjena");
       return;
     }
 
+    // Check if charismaId already exists in other users
+    if (formCharismaId.trim() !== editingUser.charismaId) {
+      if (allUsers.find((u) => u.charismaId === formCharismaId.trim() && u.id !== editingUser.id)) {
+        Alert.alert("Greška", "Charisma ID već postoji");
+        return;
+      }
+    }
+
     updateUser(editingUser.id, {
+      charismaId: formCharismaId.trim(),
       name: formName.trim(),
+      depot: formDepot.trim(),
       role: formRole,
     });
 
@@ -132,7 +154,9 @@ export default function UserManagementScreen() {
 
   const openEditModal = (user: User & { password: string }) => {
     setEditingUser(user);
+    setFormCharismaId(user.charismaId);
     setFormName(user.name);
+    setFormDepot(user.depot);
     setFormRole(user.role);
     setFormPassword("");
     setShowEditModal(true);
@@ -240,9 +264,23 @@ export default function UserManagementScreen() {
                           </View>
                         )}
                       </View>
-                      <Text className="text-gray-600 text-sm mb-1">
-                        @{user.username}
-                      </Text>
+                      <View className="flex-row items-center gap-2 mb-1">
+                        <Ionicons name="person-outline" size={14} color="#6B7280" />
+                        <Text className="text-gray-600 text-sm">
+                          @{user.username}
+                        </Text>
+                        <Text className="text-gray-400 text-sm">•</Text>
+                        <Ionicons name="keypad-outline" size={14} color="#6B7280" />
+                        <Text className="text-gray-600 text-sm">
+                          {user.charismaId}
+                        </Text>
+                      </View>
+                      <View className="flex-row items-center gap-2 mb-2">
+                        <Ionicons name="location-outline" size={14} color="#6B7280" />
+                        <Text className="text-gray-600 text-sm">
+                          {user.depot}
+                        </Text>
+                      </View>
                       <View className="flex-row items-center gap-2">
                         <View
                           className={`px-2 py-1 rounded-lg ${
@@ -372,7 +410,22 @@ export default function UserManagementScreen() {
               <View className="gap-4">
                 <View>
                   <Text className="text-gray-700 text-sm font-semibold mb-2">
-                    Korisničko ime
+                    Charisma ID *
+                  </Text>
+                  <TextInput
+                    className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 text-base border-2 border-gray-200"
+                    placeholder="npr. CH-001"
+                    placeholderTextColor="#9CA3AF"
+                    value={formCharismaId}
+                    onChangeText={setFormCharismaId}
+                    autoCapitalize="characters"
+                    autoCorrect={false}
+                  />
+                </View>
+
+                <View>
+                  <Text className="text-gray-700 text-sm font-semibold mb-2">
+                    Korisničko ime *
                   </Text>
                   <TextInput
                     className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 text-base border-2 border-gray-200"
@@ -387,7 +440,7 @@ export default function UserManagementScreen() {
 
                 <View>
                   <Text className="text-gray-700 text-sm font-semibold mb-2">
-                    Lozinka
+                    Lozinka *
                   </Text>
                   <TextInput
                     className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 text-base border-2 border-gray-200"
@@ -401,7 +454,7 @@ export default function UserManagementScreen() {
 
                 <View>
                   <Text className="text-gray-700 text-sm font-semibold mb-2">
-                    Ime i prezime
+                    Ime i prezime *
                   </Text>
                   <TextInput
                     className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 text-base border-2 border-gray-200"
@@ -414,7 +467,20 @@ export default function UserManagementScreen() {
 
                 <View>
                   <Text className="text-gray-700 text-sm font-semibold mb-2">
-                    Uloga
+                    Depo *
+                  </Text>
+                  <TextInput
+                    className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 text-base border-2 border-gray-200"
+                    placeholder="npr. Beograd, Niš, Novi Sad"
+                    placeholderTextColor="#9CA3AF"
+                    value={formDepot}
+                    onChangeText={setFormDepot}
+                  />
+                </View>
+
+                <View>
+                  <Text className="text-gray-700 text-sm font-semibold mb-2">
+                    Uloga *
                   </Text>
                   <View className="flex-row gap-2">
                     <Pressable
@@ -507,7 +573,22 @@ export default function UserManagementScreen() {
 
                 <View>
                   <Text className="text-gray-700 text-sm font-semibold mb-2">
-                    Ime i prezime
+                    Charisma ID *
+                  </Text>
+                  <TextInput
+                    className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 text-base border-2 border-gray-200"
+                    placeholder="npr. CH-001"
+                    placeholderTextColor="#9CA3AF"
+                    value={formCharismaId}
+                    onChangeText={setFormCharismaId}
+                    autoCapitalize="characters"
+                    autoCorrect={false}
+                  />
+                </View>
+
+                <View>
+                  <Text className="text-gray-700 text-sm font-semibold mb-2">
+                    Ime i prezime *
                   </Text>
                   <TextInput
                     className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 text-base border-2 border-gray-200"
@@ -515,6 +596,19 @@ export default function UserManagementScreen() {
                     placeholderTextColor="#9CA3AF"
                     value={formName}
                     onChangeText={setFormName}
+                  />
+                </View>
+
+                <View>
+                  <Text className="text-gray-700 text-sm font-semibold mb-2">
+                    Depo *
+                  </Text>
+                  <TextInput
+                    className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 text-base border-2 border-gray-200"
+                    placeholder="npr. Beograd, Niš, Novi Sad"
+                    placeholderTextColor="#9CA3AF"
+                    value={formDepot}
+                    onChangeText={setFormDepot}
                   />
                 </View>
 
@@ -534,7 +628,7 @@ export default function UserManagementScreen() {
 
                 <View>
                   <Text className="text-gray-700 text-sm font-semibold mb-2">
-                    Uloga
+                    Uloga *
                   </Text>
                   <View className="flex-row gap-2">
                     <Pressable

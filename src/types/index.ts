@@ -2,9 +2,11 @@ export type UserRole = "super_user" | "technician";
 
 export interface User {
   id: string;
+  charismaId: string;
   username: string;
   name: string;
   role: UserRole;
+  depot: string;
   isActive: boolean;
   createdAt: Date;
 }
