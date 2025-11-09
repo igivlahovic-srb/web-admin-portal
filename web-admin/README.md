@@ -47,6 +47,27 @@ bun dev
 
 Aplikacija će biti dostupna na `http://localhost:3000`
 
+### 🔍 Dijagnostika problema sa konekcijom
+
+Ako imate problema sa povezivanjem mobilne aplikacije:
+
+**Linux/Mac:**
+```bash
+./diagnose.sh
+```
+
+**Windows:**
+```cmd
+diagnose.bat
+```
+
+Ova skripta će:
+- Proveriti da li je web server pokrenut
+- Prikazati sve dostupne IP adrese
+- Testirati API endpointe
+- Proveriti firewall postavke
+- Dati korisne savete za rešavanje problema
+
 ### Production build
 
 ```bash
@@ -56,11 +77,63 @@ bun start
 
 ## 🔄 Sinhronizacija sa mobilnom aplikacijom
 
-1. Pokrenite web admin panel na računaru
-2. U mobilnoj aplikaciji, idite na **Profil → Settings**
-3. Unesite URL web panela (npr. `http://192.168.1.100:3000`)
-4. Kliknite "Testiraj konekciju"
-5. Kada je konekcija uspešna, kliknite "Sinhronizuj sada"
+### ⚠️ VAŽNO: Ne koristite localhost!
+
+Mobilna aplikacija **NE MOŽE** da se poveže na `http://localhost:3000`!
+
+Morate koristiti **IP adresu računara**.
+
+### Kako pronaći IP adresu:
+
+**Windows:**
+```cmd
+ipconfig
+```
+Potražite "IPv4 Address" koji počinje sa 192.168.x.x
+
+**Mac/Linux:**
+```bash
+ifconfig
+# ili
+hostname -I
+```
+
+**Brz način - koristite dijagnostičku skriptu:**
+```bash
+./diagnose.sh      # Linux/Mac
+diagnose.bat       # Windows
+```
+
+### Koraci za sinhronizaciju:
+
+1. **Pokrenite web admin panel** na računaru:
+   ```bash
+   cd web-admin
+   bun dev
+   ```
+
+2. **Pronađite IP adresu** računara (korak iznad)
+
+3. **U mobilnoj aplikaciji**:
+   - Idite na **Profil → Settings**
+   - Unesite URL: `http://192.168.1.XXX:3000` (zamenite XXX sa vašom IP adresom)
+   - Kliknite **"Sačuvaj"**
+   - Kliknite **"Testiraj konekciju"**
+   - Kada je konekcija uspešna, kliknite **"Sinhronizuj sada"**
+
+4. **Prijavite se na web panel**:
+   - Browser: `http://localhost:3000` (na računaru)
+   - Username: `admin`
+   - Password: `admin123`
+
+### ❌ Česte greške:
+
+| Greška | Razlog | Rešenje |
+|--------|--------|---------|
+| "Network request failed" | Koristite localhost | Koristite IP adresu računara |
+| "Network request failed" | Različite WiFi mreže | Povežite telefon i računar na istu mrežu |
+| "Network request failed" | Web panel nije pokrenut | Pokrenite `bun dev` |
+| "Network request failed" | Firewall blokira | Dozvolite port 3000 u firewall-u |
 
 ### API Endpoints
 
