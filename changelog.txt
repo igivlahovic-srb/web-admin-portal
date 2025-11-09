@@ -1,4 +1,10 @@
 - Changes made by agent 2025-11-09T01:11:51Z
+- [2025-11-09 15:30] FIX: Dodao default admin korisnika u web admin panel
+  * Problem: Korisnici nisu mogli da se prijave jer je users lista bila prazna
+  * Rešenje: Dodat default admin user (username: admin, password: admin123)
+  * Fajl: web-admin/lib/dataStore.ts
+  * Dodato: charismaId: "ADMIN001", depot: "Central"
+  * Push-ovano na GitHub: https://github.com/igivlahovic-srb/webadminportal
 - Changes made by agent 2025-11-09T01:26:10Z
 - Changes made by agent 2025-11-09T01:32:08Z
 - Changes made by agent 2025-11-09T01:33:28Z
