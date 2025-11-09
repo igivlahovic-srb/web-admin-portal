@@ -86,16 +86,21 @@ Water Service App je moderan sistem za upravljanje servisnim radovima na water a
   - Ukupno operacija
   - Utrošeni delovi
 - **Informacije o nalogu**: Korisničko ime, ime, uloga
+- **Brza sinhronizacija**: Direktno dugme za sinhronizaciju podataka (dostupno svima)
+- **Podešavanja (Settings)**: Pristup web admin sync funkcionalnosti (samo super admin)
 - **Sigurna odjava**: Potvrda pre odjave
-- **Podešavanja (Settings)**: Pristup web admin sync funkcionalnosti
 
 ### 🌐 Web Admin Sinhronizacija
-- **Sinhronizacija sa web panelom**: Prenos podataka na web admin panel
+- **Brza sinhronizacija** (dostupna svim korisnicima):
+  - Jednostavno dugme "Sinhronizuj podatke" na Profile ekranu
+  - Serviseri mogu sinhronizovati svoje servise
+  - Super admini sinhronizuju sve korisnike i servise
+  - Automatska provera konekcije pre sinhronizacije
+- **Napredna podešavanja** (samo super admin):
   - Konfigurisanje URL-a web panela
   - Testiranje konekcije
   - Automatska ili manualna sinhronizacija
-  - Sinhronizacija korisnika i servisnih naloga
-- **Status praćenja**: Prikaz poslednje sinhronizacije
+  - Status praćenja i poslednja sinhronizacija
 - **Web Admin Panel**: Kompletna web aplikacija za pregled podataka (pokrenuta na portu 3000)
 
 ## 🎨 Dizajn
@@ -175,6 +180,7 @@ src/
 5. Dodavanje utrošenih rezervnih delova (opciono)
 6. Završetak servisa
 7. Pregled istorije svih servisa
+8. **Sinhronizacija podataka**: Profil → "Sinhronizuj podatke" dugme
 
 ### Za super usera:
 1. Prijava sa naloga

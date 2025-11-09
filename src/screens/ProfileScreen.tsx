@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, Pressable, ScrollView, Alert } from "react-native";
+import React, { useState } from "react";
+import { View, Text, Pressable, ScrollView, Alert, ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -7,6 +7,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
 import { useAuthStore } from "../state/authStore";
 import { useServiceStore } from "../state/serviceStore";
+import { useSyncStore } from "../state/syncStore";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -15,6 +16,17 @@ export default function ProfileScreen() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const tickets = useServiceStore((s) => s.tickets);
+
+  const [syncing, setSyncing] = useState(false);
+
+  const apiUrl = useSyncStore((s) => s.apiUrl);
+  const isSyncing = useSyncStore((s) => s.isSyncing);
+  const setIsSyncing = useSyncStore((s) => s.setIsSyncing);
+  const setLastSyncTime = useSyncStore((s) => s.setLastSyncTime);
+  const testConnection = useSyncStore((s) => s.testConnection);
+
+  const syncUsersToWeb = useAuthStore((s) => s.syncToWeb);
+  const syncTicketsToWeb = useServiceStore((s) => s.syncToWeb);
 
   const isSuperUser = user?.role === "super_user";
 
@@ -48,6 +60,67 @@ export default function ProfileScreen() {
         },
       ]
     );
+  };
+
+  const handleQuickSync = async () => {
+    if (isSyncing || syncing) return;
+
+    setSyncing(true);
+    setIsSyncing(true);
+
+    try {
+      // Test connection first
+      const connectionOk = await testConnection();
+      if (!connectionOk) {
+        Alert.alert(
+          "Greška konekcije",
+          `Ne mogu da se povežem sa web panelom (${apiUrl}).\n\n` +
+          "Mogući razlozi:\n" +
+          "• Web panel nije pokrenut\n" +
+          "• Pogrešan URL (proverite podešavanja)\n" +
+          "• Koristite 'localhost' umesto IP adrese\n\n" +
+          isSuperUser
+            ? "Idite na Settings da proverite podešavanja."
+            : "Kontaktirajte administratora da proveri podešavanja."
+        );
+        setSyncing(false);
+        setIsSyncing(false);
+        return;
+      }
+
+      // Sync users (only for super admin)
+      if (isSuperUser) {
+        const usersSync = await syncUsersToWeb();
+        if (!usersSync) {
+          Alert.alert("Greška", "Sinhronizacija korisnika nije uspela");
+          setSyncing(false);
+          setIsSyncing(false);
+          return;
+        }
+      }
+
+      // Sync tickets
+      const ticketsSync = await syncTicketsToWeb();
+      if (!ticketsSync) {
+        Alert.alert("Greška", "Sinhronizacija servisa nije uspela");
+        setSyncing(false);
+        setIsSyncing(false);
+        return;
+      }
+
+      setLastSyncTime(new Date());
+      Alert.alert(
+        "Uspeh",
+        `Svi podaci su uspešno sinhronizovani sa web panelom!\n\n` +
+        `Sinhronizovano servisa: ${tickets.length}`
+      );
+    } catch (error) {
+      Alert.alert("Greška", "Došlo je do greške pri sinhronizaciji");
+      console.error(error);
+    } finally {
+      setSyncing(false);
+      setIsSyncing(false);
+    }
   };
 
   return (
@@ -168,20 +241,66 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Settings Button (Super User only) */}
-        {isSuperUser && (
-          <View className="px-6 pb-4">
+        {/* Action Buttons */}
+        <View className="px-6 pb-4 gap-3">
+          {/* Sync Button - Available for ALL users */}
+          <Pressable
+            onPress={handleQuickSync}
+            disabled={syncing || isSyncing}
+            className={`rounded-2xl px-6 py-4 flex-row items-center justify-center gap-3 ${
+              syncing || isSyncing
+                ? "bg-gray-100"
+                : "bg-emerald-50 border border-emerald-200 active:opacity-70"
+            }`}
+          >
+            {syncing || isSyncing ? (
+              <>
+                <ActivityIndicator color="#10B981" />
+                <Text className="text-emerald-600 text-base font-bold">
+                  Sinhronizacija...
+                </Text>
+              </>
+            ) : (
+              <>
+                <Ionicons name="cloud-upload-outline" size={24} color="#10B981" />
+                <Text className="text-emerald-600 text-base font-bold">
+                  Sinhronizuj podatke
+                </Text>
+              </>
+            )}
+          </Pressable>
+
+          {/* Settings Button - Super User only */}
+          {isSuperUser && (
             <Pressable
               onPress={() => navigation.navigate("Settings")}
               className="bg-blue-50 border border-blue-200 rounded-2xl px-6 py-4 flex-row items-center justify-center gap-3 active:opacity-70"
             >
               <Ionicons name="settings-outline" size={24} color="#3B82F6" />
               <Text className="text-blue-600 text-base font-bold">
-                Web Admin Sync
+                Podešavanja Sync-a
               </Text>
             </Pressable>
-          </View>
-        )}
+          )}
+
+          {/* Info for Technicians */}
+          {!isSuperUser && (
+            <View className="bg-blue-50 rounded-2xl p-4 border border-blue-200">
+              <View className="flex-row items-start gap-3">
+                <Ionicons name="information-circle" size={20} color="#3B82F6" />
+                <View className="flex-1">
+                  <Text className="text-blue-900 text-xs font-semibold mb-1">
+                    Sinhronizacija podataka
+                  </Text>
+                  <Text className="text-blue-800 text-xs leading-4">
+                    Kliknite dugme iznad da sinhronizujete svoje servise sa web
+                    admin panelom. Administrator je podesio URL.
+                  </Text>
+                </View>
+              </View>
+            </View>
+          )}
+        </View>
 
         {/* Logout Button */}
         <View className="px-6 pb-8">
