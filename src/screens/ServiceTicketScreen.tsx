@@ -41,6 +41,8 @@ export default function ServiceTicketScreen() {
 
   const [showOperationsModal, setShowOperationsModal] = useState(false);
   const [showSparePartsModal, setShowSparePartsModal] = useState(false);
+  const [operationSearchQuery, setOperationSearchQuery] = useState("");
+  const [sparePartSearchQuery, setSparePartSearchQuery] = useState("");
   const [sparePartQuantity, setSparePartQuantity] = useState<{
     [key: string]: number;
   }>({});
@@ -55,6 +57,20 @@ export default function ServiceTicketScreen() {
   // Filter only active items for display
   const availableOperations = operations.filter((op) => op.isActive);
   const availableSpareParts = spareParts.filter((sp) => sp.isActive);
+
+  // Search/filter operations by code or name
+  const filteredOperations = availableOperations.filter(
+    (op) =>
+      op.code.toLowerCase().includes(operationSearchQuery.toLowerCase()) ||
+      op.name.toLowerCase().includes(operationSearchQuery.toLowerCase())
+  );
+
+  // Search/filter spare parts by code or name
+  const filteredSpareParts = availableSpareParts.filter(
+    (sp) =>
+      sp.code.toLowerCase().includes(sparePartSearchQuery.toLowerCase()) ||
+      sp.name.toLowerCase().includes(sparePartSearchQuery.toLowerCase())
+  );
 
   if (!currentTicket) {
     return (
@@ -271,7 +287,10 @@ export default function ServiceTicketScreen() {
         visible={showOperationsModal}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={() => setShowOperationsModal(false)}
+        onRequestClose={() => {
+          setShowOperationsModal(false);
+          setOperationSearchQuery("");
+        }}
       >
         <SafeAreaView className="flex-1 bg-white">
           <View className="flex-row items-center justify-between px-6 py-4 border-b border-gray-200">
@@ -279,12 +298,40 @@ export default function ServiceTicketScreen() {
               Dodaj operaciju
             </Text>
             <Pressable
-              onPress={() => setShowOperationsModal(false)}
+              onPress={() => {
+                setShowOperationsModal(false);
+                setOperationSearchQuery("");
+              }}
               className="w-8 h-8 items-center justify-center"
             >
               <Ionicons name="close" size={28} color="#6B7280" />
             </Pressable>
           </View>
+
+          {/* Search Bar */}
+          <View className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <View className="flex-row items-center bg-white rounded-lg px-4 py-3 border border-gray-300">
+              <Ionicons name="search" size={20} color="#9CA3AF" />
+              <TextInput
+                className="flex-1 ml-3 text-gray-900 text-base"
+                placeholder="Pretraži po šifri ili nazivu..."
+                placeholderTextColor="#9CA3AF"
+                value={operationSearchQuery}
+                onChangeText={setOperationSearchQuery}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              {operationSearchQuery.length > 0 && (
+                <Pressable onPress={() => setOperationSearchQuery("")}>
+                  <Ionicons name="close-circle" size={20} color="#9CA3AF" />
+                </Pressable>
+              )}
+            </View>
+            <Text className="text-gray-500 text-xs mt-2">
+              {filteredOperations.length} {filteredOperations.length === 1 ? "rezultat" : "rezultata"}
+            </Text>
+          </View>
+
           <ScrollView className="flex-1">
             <View className="p-6 gap-2">
               {isLoadingConfig ? (
@@ -294,23 +341,31 @@ export default function ServiceTicketScreen() {
                     Učitavam operacije...
                   </Text>
                 </View>
-              ) : availableOperations.length === 0 ? (
+              ) : filteredOperations.length === 0 ? (
                 <View className="py-12 items-center">
                   <Ionicons name="alert-circle" size={48} color="#9CA3AF" />
                   <Text className="text-gray-500 text-sm mt-3">
-                    Nema dostupnih operacija
+                    {operationSearchQuery
+                      ? "Nema rezultata pretrage"
+                      : "Nema dostupnih operacija"}
                   </Text>
                 </View>
               ) : (
-                availableOperations.map((op) => (
+                filteredOperations.map((op) => (
                   <Pressable
                     key={op.id}
                     onPress={() => {
                       handleAddOperation(op);
                       setShowOperationsModal(false);
+                      setOperationSearchQuery("");
                     }}
                     className="bg-gray-50 rounded-xl p-4 active:bg-gray-100"
                   >
+                    <View className="flex-row items-center justify-between mb-1">
+                      <Text className="text-blue-600 text-xs font-semibold">
+                        {op.code}
+                      </Text>
+                    </View>
                     <Text className="text-gray-900 text-base font-semibold mb-1">
                       {op.name}
                     </Text>
@@ -332,7 +387,10 @@ export default function ServiceTicketScreen() {
         visible={showSparePartsModal}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={() => setShowSparePartsModal(false)}
+        onRequestClose={() => {
+          setShowSparePartsModal(false);
+          setSparePartSearchQuery("");
+        }}
       >
         <SafeAreaView className="flex-1 bg-white">
           <View className="flex-row items-center justify-between px-6 py-4 border-b border-gray-200">
@@ -340,12 +398,40 @@ export default function ServiceTicketScreen() {
               Dodaj rezervni deo
             </Text>
             <Pressable
-              onPress={() => setShowSparePartsModal(false)}
+              onPress={() => {
+                setShowSparePartsModal(false);
+                setSparePartSearchQuery("");
+              }}
               className="w-8 h-8 items-center justify-center"
             >
               <Ionicons name="close" size={28} color="#6B7280" />
             </Pressable>
           </View>
+
+          {/* Search Bar */}
+          <View className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <View className="flex-row items-center bg-white rounded-lg px-4 py-3 border border-gray-300">
+              <Ionicons name="search" size={20} color="#9CA3AF" />
+              <TextInput
+                className="flex-1 ml-3 text-gray-900 text-base"
+                placeholder="Pretraži po šifri ili nazivu..."
+                placeholderTextColor="#9CA3AF"
+                value={sparePartSearchQuery}
+                onChangeText={setSparePartSearchQuery}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              {sparePartSearchQuery.length > 0 && (
+                <Pressable onPress={() => setSparePartSearchQuery("")}>
+                  <Ionicons name="close-circle" size={20} color="#9CA3AF" />
+                </Pressable>
+              )}
+            </View>
+            <Text className="text-gray-500 text-xs mt-2">
+              {filteredSpareParts.length} {filteredSpareParts.length === 1 ? "rezultat" : "rezultata"}
+            </Text>
+          </View>
+
           <ScrollView className="flex-1">
             <View className="p-6 gap-3">
               {isLoadingConfig ? (
@@ -355,23 +441,30 @@ export default function ServiceTicketScreen() {
                     Učitavam delove...
                   </Text>
                 </View>
-              ) : availableSpareParts.length === 0 ? (
+              ) : filteredSpareParts.length === 0 ? (
                 <View className="py-12 items-center">
                   <Ionicons name="alert-circle" size={48} color="#9CA3AF" />
                   <Text className="text-gray-500 text-sm mt-3">
-                    Nema dostupnih delova
+                    {sparePartSearchQuery
+                      ? "Nema rezultata pretrage"
+                      : "Nema dostupnih delova"}
                   </Text>
                 </View>
               ) : (
-                availableSpareParts.map((part) => (
+                filteredSpareParts.map((part) => (
                   <View
                     key={part.id}
                     className="bg-gray-50 rounded-xl p-4"
                   >
                     <View className="flex-row items-center justify-between mb-3">
-                      <Text className="flex-1 text-gray-900 text-base font-semibold">
-                        {part.name}
-                      </Text>
+                      <View className="flex-1">
+                        <Text className="text-emerald-600 text-xs font-semibold mb-1">
+                          {part.code}
+                        </Text>
+                        <Text className="text-gray-900 text-base font-semibold">
+                          {part.name}
+                        </Text>
+                      </View>
                     </View>
                     <View className="flex-row items-center gap-3">
                       <View className="flex-1 flex-row items-center bg-white rounded-lg px-4 py-2 border border-gray-200">
@@ -392,11 +485,15 @@ export default function ServiceTicketScreen() {
                             });
                           }}
                         />
+                        <Text className="text-gray-500 text-sm ml-2">
+                          {part.unit}
+                        </Text>
                       </View>
                       <Pressable
                         onPress={() => {
                           handleAddSparePart(part);
                           setShowSparePartsModal(false);
+                          setSparePartSearchQuery("");
                         }}
                         className="bg-emerald-600 px-6 py-3 rounded-lg active:opacity-80"
                       >

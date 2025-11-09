@@ -44,6 +44,7 @@ export interface SyncData {
 // Configuration items (master data)
 export interface OperationTemplate {
   id: string;
+  code: string; // Šifra operacije
   name: string;
   description?: string;
   isActive: boolean;
@@ -52,6 +53,7 @@ export interface OperationTemplate {
 
 export interface SparePartTemplate {
   id: string;
+  code: string; // Šifra rezervnog dela
   name: string;
   unit: string; // e.g., "kom", "par", "set"
   isActive: boolean;

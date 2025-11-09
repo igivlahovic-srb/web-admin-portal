@@ -4,21 +4,21 @@ import { User, ServiceTicket, OperationTemplate, SparePartTemplate } from "../ty
 let users: User[] = [];
 let tickets: ServiceTicket[] = [];
 let operations: OperationTemplate[] = [
-  { id: "1", name: "Čišćenje rezervoara", description: "Kompletno čišćenje rezervoara za vodu", isActive: true, createdAt: new Date("2024-01-01") },
-  { id: "2", name: "Zamena filtera", description: "Zamena filter uloška", isActive: true, createdAt: new Date("2024-01-01") },
-  { id: "3", name: "Provera slavina", description: "Provera funkcionalnosti slavina", isActive: true, createdAt: new Date("2024-01-01") },
-  { id: "4", name: "Provera sistema hlađenja", description: "Provera hladnjaka i kompresora", isActive: true, createdAt: new Date("2024-01-01") },
-  { id: "5", name: "Provera grejača", description: "Provera funkcije grejanja vode", isActive: true, createdAt: new Date("2024-01-01") },
-  { id: "6", name: "Zamena cevi", description: "Zamena silikonskih cevi", isActive: true, createdAt: new Date("2024-01-01") },
+  { id: "1", code: "OP-001", name: "Čišćenje rezervoara", description: "Kompletno čišćenje rezervoara za vodu", isActive: true, createdAt: new Date("2024-01-01") },
+  { id: "2", code: "OP-002", name: "Zamena filtera", description: "Zamena filter uloška", isActive: true, createdAt: new Date("2024-01-01") },
+  { id: "3", code: "OP-003", name: "Provera slavina", description: "Provera funkcionalnosti slavina", isActive: true, createdAt: new Date("2024-01-01") },
+  { id: "4", code: "OP-004", name: "Provera sistema hlađenja", description: "Provera hladnjaka i kompresora", isActive: true, createdAt: new Date("2024-01-01") },
+  { id: "5", code: "OP-005", name: "Provera grejača", description: "Provera funkcije grejanja vode", isActive: true, createdAt: new Date("2024-01-01") },
+  { id: "6", code: "OP-006", name: "Zamena cevi", description: "Zamena silikonskih cevi", isActive: true, createdAt: new Date("2024-01-01") },
 ];
 
 let spareParts: SparePartTemplate[] = [
-  { id: "1", name: "Filter uložak", unit: "kom", isActive: true, createdAt: new Date("2024-01-01") },
-  { id: "2", name: "Slavina za hladnu vodu", unit: "kom", isActive: true, createdAt: new Date("2024-01-01") },
-  { id: "3", name: "Slavina za toplu vodu", unit: "kom", isActive: true, createdAt: new Date("2024-01-01") },
-  { id: "4", name: "Silikonske cevi", unit: "m", isActive: true, createdAt: new Date("2024-01-01") },
-  { id: "5", name: "Grejač", unit: "kom", isActive: true, createdAt: new Date("2024-01-01") },
-  { id: "6", name: "Termostat", unit: "kom", isActive: true, createdAt: new Date("2024-01-01") },
+  { id: "1", code: "RD-001", name: "Filter uložak", unit: "kom", isActive: true, createdAt: new Date("2024-01-01") },
+  { id: "2", code: "RD-002", name: "Slavina za hladnu vodu", unit: "kom", isActive: true, createdAt: new Date("2024-01-01") },
+  { id: "3", code: "RD-003", name: "Slavina za toplu vodu", unit: "kom", isActive: true, createdAt: new Date("2024-01-01") },
+  { id: "4", code: "RD-004", name: "Silikonske cevi", unit: "m", isActive: true, createdAt: new Date("2024-01-01") },
+  { id: "5", code: "RD-005", name: "Grejač", unit: "kom", isActive: true, createdAt: new Date("2024-01-01") },
+  { id: "6", code: "RD-006", name: "Termostat", unit: "kom", isActive: true, createdAt: new Date("2024-01-01") },
 ];
 
 export const dataStore = {

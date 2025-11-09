@@ -38,6 +38,7 @@ export interface ServiceTicket {
 // Configuration items (master data from web admin)
 export interface OperationTemplate {
   id: string;
+  code: string; // Šifra operacije
   name: string;
   description?: string;
   isActive: boolean;
@@ -46,6 +47,7 @@ export interface OperationTemplate {
 
 export interface SparePartTemplate {
   id: string;
+  code: string; // Šifra rezervnog dela
   name: string;
   unit: string;
   isActive: boolean;
