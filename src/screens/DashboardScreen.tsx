@@ -44,16 +44,6 @@ export default function DashboardScreen() {
           colors={["#1E40AF", "#3B82F6"]}
           style={{ paddingTop: 60, paddingBottom: 32, paddingHorizontal: 24 }}
         >
-          {/* App Title */}
-          <View className="mb-4">
-            <Text className="text-white text-xl font-bold">
-              La Fantana WHS
-            </Text>
-            <Text className="text-blue-200 text-sm">
-              Servisni Modul
-            </Text>
-          </View>
-
           <View className="flex-row items-center justify-between mb-6">
             <View>
               <Text className="text-blue-100 text-sm font-medium mb-1">
