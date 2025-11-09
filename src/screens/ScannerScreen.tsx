@@ -189,27 +189,35 @@ export default function ScannerScreen() {
       />
 
       {/* Overlay UI */}
-      <View style={StyleSheet.absoluteFillObject}>
+      <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
         {/* Header */}
-        <SafeAreaView edges={["top"]}>
+        <SafeAreaView edges={["top"]} style={{ zIndex: 100 }}>
           <View className="px-4 py-3 flex-row items-center justify-between">
             <Pressable
-              onPress={() => navigation.goBack()}
-              className="w-10 h-10 items-center justify-center bg-black/50 rounded-full active:opacity-70"
+              onPress={() => {
+                if (!processing) {
+                  navigation.goBack();
+                }
+              }}
+              disabled={processing}
+              className="w-12 h-12 items-center justify-center bg-black/70 rounded-full active:opacity-70"
+              style={{ elevation: 5 }}
             >
-              <Ionicons name="close" size={24} color="#FFFFFF" />
+              <Ionicons name="close" size={28} color="#FFFFFF" />
             </Pressable>
             <Pressable
               onPress={toggleCameraFacing}
-              className="w-10 h-10 items-center justify-center bg-black/50 rounded-full active:opacity-70"
+              disabled={processing}
+              className="w-12 h-12 items-center justify-center bg-black/70 rounded-full active:opacity-70"
+              style={{ elevation: 5 }}
             >
-              <Ionicons name="camera-reverse" size={24} color="#FFFFFF" />
+              <Ionicons name="camera-reverse" size={28} color="#FFFFFF" />
             </Pressable>
           </View>
         </SafeAreaView>
 
         {/* Scanning Frame */}
-        <View className="flex-1 items-center justify-center">
+        <View className="flex-1 items-center justify-center" pointerEvents="none">
           <View className="relative">
             {/* QR Frame */}
             <View className="w-64 h-64 border-2 border-white rounded-3xl">
@@ -243,6 +251,7 @@ export default function ScannerScreen() {
           <View className="px-6 pb-6">
             <Pressable
               onPress={handleManualEntry}
+              disabled={processing}
               className="bg-white/20 backdrop-blur px-6 py-4 rounded-2xl active:opacity-70"
             >
               <Text className="text-white text-base font-semibold text-center">
