@@ -93,15 +93,11 @@ export default function ScannerScreen() {
     addTicket(newTicket);
     setCurrentTicket(newTicket);
 
-    // Close scanner modal and navigate to service ticket screen
+    // Replace scanner with service ticket screen
     setTimeout(() => {
       setProcessing(false);
       setScanned(false);
-      navigation.goBack(); // Close scanner modal
-      // Navigate to ServiceTicket after modal closes
-      setTimeout(() => {
-        navigation.navigate("ServiceTicket");
-      }, 100);
+      navigation.replace("ServiceTicket");
     }, 500);
   };
 
@@ -124,12 +120,8 @@ export default function ScannerScreen() {
     addTicket(newTicket);
     setCurrentTicket(newTicket);
 
-    // Close scanner modal first
-    navigation.goBack();
-    // Navigate to ServiceTicket after modal closes
-    setTimeout(() => {
-      navigation.navigate("ServiceTicket");
-    }, 100);
+    // Replace scanner with service ticket screen
+    navigation.replace("ServiceTicket");
   };
 
   const handleManualEntry = () => {
