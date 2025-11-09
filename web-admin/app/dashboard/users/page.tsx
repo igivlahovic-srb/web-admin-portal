@@ -249,7 +249,13 @@ export default function UsersPage() {
                       Ime
                     </th>
                     <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
+                      Charisma ID
+                    </th>
+                    <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
                       Korisničko ime
+                    </th>
+                    <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
+                      Depo
                     </th>
                     <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
                       Uloga
@@ -280,7 +286,24 @@ export default function UsersPage() {
                           </span>
                         </div>
                       </td>
-                      <td className="py-4 px-6 text-gray-700">{u.username}</td>
+                      <td className="py-4 px-6">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm font-mono">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                          </svg>
+                          {u.charismaId}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6 text-gray-700">@{u.username}</td>
+                      <td className="py-4 px-6">
+                        <span className="inline-flex items-center gap-1.5 text-gray-700">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          {u.depot}
+                        </span>
+                      </td>
                       <td className="py-4 px-6">
                         {u.role === "super_user" ? (
                           <span className="inline-block px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold">
