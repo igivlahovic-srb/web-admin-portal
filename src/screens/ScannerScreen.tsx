@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -35,6 +35,7 @@ export default function ScannerScreen() {
   const [showManualEntry, setShowManualEntry] = useState(false);
   const [manualCode, setManualCode] = useState("");
   const navigation = useNavigation<NavigationProp>();
+  const isProcessingRef = useRef(false);
 
   const addTicket = useServiceStore((s) => s.addTicket);
   const setCurrentTicket = useServiceStore((s) => s.setCurrentTicket);
@@ -74,7 +75,13 @@ export default function ScannerScreen() {
   }
 
   const handleBarCodeScanned = ({ data }: { type: string; data: string }) => {
-    if (scanned || processing) return;
+    // Use ref to prevent race conditions - state updates are async
+    if (scanned || processing || isProcessingRef.current) return;
+
+    // Immediately set ref to prevent duplicate scans
+    isProcessingRef.current = true;
+    setScanned(true);
+    setProcessing(true);
 
     // Check if there's already an active ticket with this device code
     const existingActiveTicket = tickets.find(
@@ -83,19 +90,15 @@ export default function ScannerScreen() {
 
     if (existingActiveTicket) {
       // If ticket already exists, just navigate to it
-      setScanned(true);
-      setProcessing(true);
       setCurrentTicket(existingActiveTicket);
       setTimeout(() => {
         setProcessing(false);
         setScanned(false);
+        isProcessingRef.current = false;
         navigation.replace("ServiceTicket");
       }, 300);
       return;
     }
-
-    setScanned(true);
-    setProcessing(true);
 
     // Create new service ticket with unique ID
     const newTicket: ServiceTicket = {
@@ -116,6 +119,7 @@ export default function ScannerScreen() {
     setTimeout(() => {
       setProcessing(false);
       setScanned(false);
+      isProcessingRef.current = false;
       navigation.replace("ServiceTicket");
     }, 500);
   };
