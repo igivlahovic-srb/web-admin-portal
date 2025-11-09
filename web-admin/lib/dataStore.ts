@@ -1,7 +1,20 @@
 import { User, ServiceTicket, OperationTemplate, SparePartTemplate } from "../types";
 
 // In-memory storage (would be database in production)
-let users: User[] = [];
+// Default admin user for initial access
+let users: User[] = [
+  {
+    id: "1",
+    charismaId: "ADMIN001",
+    username: "admin",
+    password: "admin123",
+    name: "Administrator",
+    role: "super_user",
+    depot: "Central",
+    isActive: true,
+    createdAt: new Date("2024-01-01"),
+  },
+];
 let tickets: ServiceTicket[] = [];
 let operations: OperationTemplate[] = [
   { id: "1", code: "OP-001", name: "Čišćenje rezervoara", description: "Kompletno čišćenje rezervoara za vodu", isActive: true, createdAt: new Date("2024-01-01") },
