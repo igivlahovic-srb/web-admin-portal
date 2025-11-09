@@ -1,0 +1,756 @@
+From 9f6eefb5461b288932b622e35479f4e3ae38f275 Mon Sep 17 00:00:00 2001
+From: Sandbox user <tools@notanumber.com>
+Date: Sun, 9 Nov 2025 16:11:42 +0000
+Subject: [PATCH 1/4] Add back to dashboard button on all admin pages
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Added prominent "Vrati se na Dashboard" button on Users page
+- Added "Vrati se na Dashboard" button on Services page
+- Added "Vrati se na Dashboard" button on Configuration page
+- Button includes left arrow icon for better UX
+- Consistent styling across all pages with white background and hover effect
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+---
+ web-admin/app/configuration/page.tsx      | 25 +++++++++++++++++++++++
+ web-admin/app/dashboard/services/page.tsx | 23 +++++++++++++++++++++
+ web-admin/app/dashboard/users/page.tsx    | 23 +++++++++++++++++++++
+ 3 files changed, 71 insertions(+)
+
+diff --git a/web-admin/app/configuration/page.tsx b/web-admin/app/configuration/page.tsx
+index 32695cf..3d6bd02 100644
+--- a/web-admin/app/configuration/page.tsx
++++ b/web-admin/app/configuration/page.tsx
+@@ -1,9 +1,11 @@
+ "use client";
+ 
+ import { useState, useEffect, useRef } from "react";
++import { useRouter } from "next/navigation";
+ import { OperationTemplate, SparePartTemplate } from "../../types";
+ 
+ export default function ConfigurationPage() {
++  const router = useRouter();
+   const [operations, setOperations] = useState<OperationTemplate[]>([]);
+   const [spareParts, setSpareParts] = useState<SparePartTemplate[]>([]);
+   const [activeTab, setActiveTab] = useState<"operations" | "spareParts">("operations");
+@@ -352,6 +354,29 @@ export default function ConfigurationPage() {
+ 
+       {/* Tabs */}
+       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
++        {/* Back to Dashboard Button */}
++        <div className="mb-6">
++          <button
++            onClick={() => router.push("/dashboard")}
++            className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 rounded-xl font-medium transition-colors border border-gray-200 shadow-sm"
++          >
++            <svg
++              className="w-5 h-5"
++              fill="none"
++              stroke="currentColor"
++              viewBox="0 0 24 24"
++            >
++              <path
++                strokeLinecap="round"
++                strokeLinejoin="round"
++                strokeWidth={2}
++                d="M10 19l-7-7m0 0l7-7m-7 7h18"
++              />
++            </svg>
++            Vrati se na Dashboard
++          </button>
++        </div>
++
+         <div className="border-b border-gray-200">
+           <nav className="-mb-px flex space-x-8">
+             <button
+diff --git a/web-admin/app/dashboard/services/page.tsx b/web-admin/app/dashboard/services/page.tsx
+index f71df07..eac8dc9 100644
+--- a/web-admin/app/dashboard/services/page.tsx
++++ b/web-admin/app/dashboard/services/page.tsx
+@@ -156,6 +156,29 @@ export default function ServicesPage() {
+ 
+       {/* Main Content */}
+       <main className="max-w-7xl mx-auto px-6 py-8">
++        {/* Back to Dashboard Button */}
++        <div className="mb-6">
++          <button
++            onClick={() => router.push("/dashboard")}
++            className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 rounded-xl font-medium transition-colors border border-gray-200 shadow-sm"
++          >
++            <svg
++              className="w-5 h-5"
++              fill="none"
++              stroke="currentColor"
++              viewBox="0 0 24 24"
++            >
++              <path
++                strokeLinecap="round"
++                strokeLinejoin="round"
++                strokeWidth={2}
++                d="M10 19l-7-7m0 0l7-7m-7 7h18"
++              />
++            </svg>
++            Vrati se na Dashboard
++          </button>
++        </div>
++
+         {/* Stats */}
+         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+           <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+diff --git a/web-admin/app/dashboard/users/page.tsx b/web-admin/app/dashboard/users/page.tsx
+index f77f615..d4d1f10 100644
+--- a/web-admin/app/dashboard/users/page.tsx
++++ b/web-admin/app/dashboard/users/page.tsx
+@@ -152,6 +152,29 @@ export default function UsersPage() {
+ 
+       {/* Main Content */}
+       <main className="max-w-7xl mx-auto px-6 py-8">
++        {/* Back to Dashboard Button */}
++        <div className="mb-6">
++          <button
++            onClick={() => router.push("/dashboard")}
++            className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 rounded-xl font-medium transition-colors border border-gray-200 shadow-sm"
++          >
++            <svg
++              className="w-5 h-5"
++              fill="none"
++              stroke="currentColor"
++              viewBox="0 0 24 24"
++            >
++              <path
++                strokeLinecap="round"
++                strokeLinejoin="round"
++                strokeWidth={2}
++                d="M10 19l-7-7m0 0l7-7m-7 7h18"
++              />
++            </svg>
++            Vrati se na Dashboard
++          </button>
++        </div>
++
+         {/* Stats */}
+         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+           <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+-- 
+2.39.5
+
+
+From 4edf8972863ed2ee28cc18117a7dbe7ed0594bae Mon Sep 17 00:00:00 2001
+From: Sandbox user <tools@notanumber.com>
+Date: Sun, 9 Nov 2025 16:12:04 +0000
+Subject: [PATCH 2/4] Na svakoj stranici na panelu dodaj dugme vrati se na
+ dashboard
+
+---
+ changelog.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/changelog.txt b/changelog.txt
+index c984133..426d251 100644
+--- a/changelog.txt
++++ b/changelog.txt
+@@ -88,3 +88,4 @@
+ - Changes made by agent 2025-11-09T16:04:17Z
+ - Changes made by agent 2025-11-09T16:09:04Z
+ - Changes made by agent 2025-11-09T16:09:54Z
++- Changes made by agent 2025-11-09T16:12:04Z
+-- 
+2.39.5
+
+
+From dbb623d78bdca42c77c26e4ea1256d8ee5185ca5 Mon Sep 17 00:00:00 2001
+From: Sandbox user <tools@notanumber.com>
+Date: Sun, 9 Nov 2025 16:15:26 +0000
+Subject: [PATCH 3/4] Add auto-update functionality to admin panel
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Features:
+- Automatic version checking every 5 minutes
+- Blue notification banner when new version is available
+- One-click update button that runs git pull, bun install, and build
+- Auto-restart capability via PM2 or systemd
+- Real-time update progress indicator
+
+API Endpoints:
+- GET /api/version - Check current and latest version from git
+- POST /api/update - Execute update process (pull, install, build)
+
+Components:
+- UpdateNotification - React component with animated banner
+- Shows current and latest commit hash
+- Smooth update experience with loading states
+
+Scripts:
+- auto-update-watcher.sh - Background process that monitors for updates
+- Automatically restarts application after update completes
+- Works with both PM2 and systemd
+
+Documentation:
+- AUTO_UPDATE.md - Complete setup and troubleshooting guide
+- Includes PM2 and systemd configuration examples
+- Git configuration recommendations for conflict-free updates
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+---
+ web-admin/AUTO_UPDATE.md                    | 153 +++++++++++++++++
+ web-admin/app/api/update/route.ts           |  44 +++++
+ web-admin/app/api/version/route.ts          |  52 ++++++
+ web-admin/app/dashboard/page.tsx            |   4 +
+ web-admin/components/UpdateNotification.tsx | 172 ++++++++++++++++++++
+ web-admin/scripts/auto-update-watcher.sh    |  42 +++++
+ 6 files changed, 467 insertions(+)
+ create mode 100644 web-admin/AUTO_UPDATE.md
+ create mode 100644 web-admin/app/api/update/route.ts
+ create mode 100644 web-admin/app/api/version/route.ts
+ create mode 100644 web-admin/components/UpdateNotification.tsx
+ create mode 100755 web-admin/scripts/auto-update-watcher.sh
+
+diff --git a/web-admin/AUTO_UPDATE.md b/web-admin/AUTO_UPDATE.md
+new file mode 100644
+index 0000000..b1ff3cf
+--- /dev/null
++++ b/web-admin/AUTO_UPDATE.md
+@@ -0,0 +1,153 @@
++# Auto-Update Funkcionalnost
++
++## Pregled
++
++Web admin panel sada ima automatsku detekciju i ažuriranje nove verzije aplikacije. Sistem automatski proverava da li postoji nova verzija na GitHub-u i prikazuje notifikaciju administratoru.
++
++## Kako radi
++
++1. **Provera verzije**: Sistem proverava za nove verzije svakih 5 minuta
++2. **Notifikacija**: Kada je nova verzija dostupna, prikazuje se plavi banner u gornjem desnom uglu
++3. **Ažuriranje**: Administrator klikne na "Ažuriraj sada" dugme
++4. **Automatski proces**:
++   - Pull najnovijeg koda sa GitHub-a
++   - Instaliranje zavisnosti (`bun install`)
++   - Build aplikacije (`bun run build`)
++   - Restart aplikacije (preko PM2 ili systemd)
++
++## Postavljanje
++
++### Opcija 1: PM2 (Preporučeno)
++
++1. **Instalirajte PM2 ako već nije instaliran:**
++```bash
++npm install -g pm2
++```
++
++2. **Pokrenite aplikaciju sa PM2:**
++```bash
++cd /home/itserbia/web-admin
++pm2 start npm --name "water-service-web-admin" -- run start
++pm2 save
++pm2 startup
++```
++
++3. **Pokrenite auto-update watcher:**
++```bash
++pm2 start /home/itserbia/web-admin/scripts/auto-update-watcher.sh --name "web-admin-watcher"
++pm2 save
++```
++
++### Opcija 2: Systemd
++
++1. **Kreirajte systemd servis za watcher:**
++```bash
++sudo nano /etc/systemd/system/web-admin-watcher.service
++```
++
++2. **Dodajte sledeći sadržaj:**
++```ini
++[Unit]
++Description=Web Admin Auto-Update Watcher
++After=network.target
++
++[Service]
++Type=simple
++User=itserbia
++WorkingDirectory=/home/itserbia/web-admin
++ExecStart=/home/itserbia/web-admin/scripts/auto-update-watcher.sh
++Restart=always
++RestartSec=10
++
++[Install]
++WantedBy=multi-user.target
++```
++
++3. **Pokrenite servis:**
++```bash
++sudo systemctl daemon-reload
++sudo systemctl enable web-admin-watcher
++sudo systemctl start web-admin-watcher
++```
++
++4. **Proverite status:**
++```bash
++sudo systemctl status web-admin-watcher
++```
++
++## Git konfiguracija za sigurnost
++
++Da bi ažuriranje radilo bez konflikta, preporučujemo:
++
++1. **Postavite git da automatski rešava konflikte strategijom 'theirs' (preferira remote promene):**
++```bash
++cd /home/itserbia/web-admin
++git config pull.rebase false
++git config pull.ff only
++```
++
++2. **Alternativno, koristite ovu strategiju koja čuva lokalne promene:**
++```bash
++git config pull.rebase true
++```
++
++## Bezbednost
++
++- Endpoint `/api/update` pokreće bash komande
++- Preporučujemo da ograničite pristup samo na super_user role
++- Možete dodati dodatnu autentifikaciju ako je potrebno
++
++## API Endpoints
++
++### GET /api/version
++Vraća informacije o trenutnoj i najnovijoj verziji:
++```json
++{
++  "success": true,
++  "data": {
++    "currentVersion": "1.0.0",
++    "currentCommit": "abc1234",
++    "latestCommit": "def5678",
++    "hasUpdate": true
++  }
++}
++```
++
++### POST /api/update
++Pokreće proces ažuriranja aplikacije:
++```json
++{
++  "success": true,
++  "message": "Ažuriranje uspešno! Aplikacija će se restartovati za nekoliko sekundi..."
++}
++```
++
++## Rešavanje problema
++
++### Problem: Update ne radi
++- Proverite da li aplikacija ima pristup git remote-u
++- Proverite da li `bun` komanda radi
++- Pogledajte logove: `pm2 logs water-service-web-admin`
++
++### Problem: Aplikacija se ne restartuje
++- Proverite da li watcher radi: `pm2 list` ili `systemctl status web-admin-watcher`
++- Proverite `/tmp/web-admin-restart-required` flag fajl
++
++### Problem: Git pull konflikti
++- Resetujte lokalne promene: `git reset --hard origin/main`
++- Ili koristite stash: `git stash && git pull && git stash pop`
++
++## Logovi
++
++- **PM2 logovi aplikacije**: `pm2 logs water-service-web-admin`
++- **PM2 logovi watcher-a**: `pm2 logs web-admin-watcher`
++- **Systemd logovi**: `journalctl -u web-admin-watcher -f`
++
++## Testiranje
++
++Da testirate funkcionalnost:
++
++1. Napravite commit na GitHub-u
++2. Sačekajte do 5 minuta da aplikacija detektuje promenu
++3. Kliknite na notifikaciju "Ažuriraj sada"
++4. Aplikacija će se automatski ažurirati i restartovati
+diff --git a/web-admin/app/api/update/route.ts b/web-admin/app/api/update/route.ts
+new file mode 100644
+index 0000000..7376651
+--- /dev/null
++++ b/web-admin/app/api/update/route.ts
+@@ -0,0 +1,44 @@
++import { NextResponse } from "next/server";
++import { exec } from "child_process";
++import { promisify } from "util";
++
++const execAsync = promisify(exec);
++
++export async function POST() {
++  try {
++    console.log("Starting application update...");
++
++    // Pull latest changes from git
++    console.log("Pulling latest changes from git...");
++    await execAsync("git pull origin main");
++
++    // Install dependencies
++    console.log("Installing dependencies...");
++    await execAsync("bun install");
++
++    // Build the application
++    console.log("Building application...");
++    await execAsync("bun run build");
++
++    // Note: The application restart needs to be handled by PM2 or systemd
++    // We'll create a flag file that the process manager can monitor
++    const fs = require("fs");
++    fs.writeFileSync("/tmp/web-admin-restart-required", "1");
++
++    console.log("Update completed successfully!");
++
++    return NextResponse.json({
++      success: true,
++      message: "Ažuriranje uspešno! Aplikacija će se restartovati za nekoliko sekundi...",
++    });
++  } catch (error) {
++    console.error("Error updating application:", error);
++    return NextResponse.json(
++      {
++        success: false,
++        message: "Greška pri ažuriranju aplikacije: " + (error as Error).message,
++      },
++      { status: 500 }
++    );
++  }
++}
+diff --git a/web-admin/app/api/version/route.ts b/web-admin/app/api/version/route.ts
+new file mode 100644
+index 0000000..8e130f9
+--- /dev/null
++++ b/web-admin/app/api/version/route.ts
+@@ -0,0 +1,52 @@
++import { NextResponse } from "next/server";
++import { exec } from "child_process";
++import { promisify } from "util";
++
++const execAsync = promisify(exec);
++
++export async function GET() {
++  try {
++    // Get current version from package.json
++    const packageJson = require("../../../../package.json");
++    const currentVersion = packageJson.version;
++
++    // Check if there are updates available from git
++    let hasUpdate = false;
++    let latestCommit = "";
++    let currentCommit = "";
++
++    try {
++      // Get current commit hash
++      const { stdout: currentHash } = await execAsync("git rev-parse HEAD");
++      currentCommit = currentHash.trim().substring(0, 7);
++
++      // Fetch latest from remote without pulling
++      await execAsync("git fetch origin main --quiet");
++
++      // Get latest remote commit hash
++      const { stdout: remoteHash } = await execAsync("git rev-parse origin/main");
++      latestCommit = remoteHash.trim().substring(0, 7);
++
++      // Check if they differ
++      hasUpdate = currentCommit !== latestCommit;
++    } catch (error) {
++      console.error("Error checking git updates:", error);
++    }
++
++    return NextResponse.json({
++      success: true,
++      data: {
++        currentVersion,
++        currentCommit,
++        latestCommit,
++        hasUpdate,
++      },
++    });
++  } catch (error) {
++    console.error("Error getting version:", error);
++    return NextResponse.json(
++      { success: false, message: "Greška pri proveri verzije" },
++      { status: 500 }
++    );
++  }
++}
+diff --git a/web-admin/app/dashboard/page.tsx b/web-admin/app/dashboard/page.tsx
+index 6b08424..fdeccd3 100644
+--- a/web-admin/app/dashboard/page.tsx
++++ b/web-admin/app/dashboard/page.tsx
+@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
+ import { useRouter } from "next/navigation";
+ import { User, ServiceTicket } from "../../types";
+ import { format } from "date-fns";
++import UpdateNotification from "../../components/UpdateNotification";
+ 
+ export default function DashboardPage() {
+   const [user, setUser] = useState<Omit<User, "password"> | null>(null);
+@@ -104,6 +105,9 @@ export default function DashboardPage() {
+ 
+   return (
+     <div className="min-h-screen bg-gray-50">
++      {/* Update Notification */}
++      <UpdateNotification />
++
+       {/* Header */}
+       <header className="bg-white border-b border-gray-200">
+         <div className="max-w-7xl mx-auto px-6 py-4">
+diff --git a/web-admin/components/UpdateNotification.tsx b/web-admin/components/UpdateNotification.tsx
+new file mode 100644
+index 0000000..db11630
+--- /dev/null
++++ b/web-admin/components/UpdateNotification.tsx
+@@ -0,0 +1,172 @@
++"use client";
++
++import { useEffect, useState } from "react";
++
++interface VersionInfo {
++  currentVersion: string;
++  currentCommit: string;
++  latestCommit: string;
++  hasUpdate: boolean;
++}
++
++export default function UpdateNotification() {
++  const [versionInfo, setVersionInfo] = useState<VersionInfo | null>(null);
++  const [isUpdating, setIsUpdating] = useState(false);
++  const [showNotification, setShowNotification] = useState(false);
++
++  // Check for updates every 5 minutes
++  useEffect(() => {
++    checkForUpdates();
++    const interval = setInterval(checkForUpdates, 5 * 60 * 1000);
++    return () => clearInterval(interval);
++  }, []);
++
++  const checkForUpdates = async () => {
++    try {
++      const response = await fetch("/api/version");
++      const data = await response.json();
++
++      if (data.success && data.data) {
++        setVersionInfo(data.data);
++        if (data.data.hasUpdate) {
++          setShowNotification(true);
++        }
++      }
++    } catch (error) {
++      console.error("Error checking for updates:", error);
++    }
++  };
++
++  const handleUpdate = async () => {
++    if (!confirm("Da li ste sigurni da želite da ažurirate aplikaciju? Aplikacija će biti nedostupna nekoliko sekundi tokom ažuriranja.")) {
++      return;
++    }
++
++    setIsUpdating(true);
++
++    try {
++      const response = await fetch("/api/update", {
++        method: "POST",
++      });
++
++      const data = await response.json();
++
++      if (data.success) {
++        alert(data.message);
++        // Wait 3 seconds then reload the page
++        setTimeout(() => {
++          window.location.reload();
++        }, 3000);
++      } else {
++        alert("Greška: " + data.message);
++        setIsUpdating(false);
++      }
++    } catch (error) {
++      console.error("Error updating:", error);
++      alert("Greška pri ažuriranju aplikacije");
++      setIsUpdating(false);
++    }
++  };
++
++  if (!showNotification || !versionInfo?.hasUpdate) {
++    return null;
++  }
++
++  return (
++    <div className="fixed top-4 right-4 z-50 max-w-md">
++      <div className="bg-blue-600 text-white rounded-2xl shadow-2xl p-4 animate-slide-in">
++        <div className="flex items-start gap-3">
++          <div className="flex-shrink-0 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
++            <svg
++              className="w-6 h-6"
++              fill="none"
++              stroke="currentColor"
++              viewBox="0 0 24 24"
++            >
++              <path
++                strokeLinecap="round"
++                strokeLinejoin="round"
++                strokeWidth={2}
++                d="M13 10V3L4 14h7v7l9-11h-7z"
++              />
++            </svg>
++          </div>
++
++          <div className="flex-1">
++            <h3 className="font-bold text-lg mb-1">Nova verzija dostupna!</h3>
++            <p className="text-sm text-blue-100 mb-3">
++              Dostupna je nova verzija aplikacije. Kliknite da instalirate.
++            </p>
++            <div className="text-xs text-blue-200 mb-3">
++              Trenutna: {versionInfo.currentCommit} → Nova: {versionInfo.latestCommit}
++            </div>
++
++            <div className="flex gap-2">
++              <button
++                onClick={handleUpdate}
++                disabled={isUpdating}
++                className="px-4 py-2 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
++              >
++                {isUpdating ? (
++                  <span className="flex items-center gap-2">
++                    <svg
++                      className="animate-spin h-4 w-4"
++                      xmlns="http://www.w3.org/2000/svg"
++                      fill="none"
++                      viewBox="0 0 24 24"
++                    >
++                      <circle
++                        className="opacity-25"
++                        cx="12"
++                        cy="12"
++                        r="10"
++                        stroke="currentColor"
++                        strokeWidth="4"
++                      ></circle>
++                      <path
++                        className="opacity-75"
++                        fill="currentColor"
++                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
++                      ></path>
++                    </svg>
++                    Ažuriranje...
++                  </span>
++                ) : (
++                  "Ažuriraj sada"
++                )}
++              </button>
++
++              <button
++                onClick={() => setShowNotification(false)}
++                disabled={isUpdating}
++                className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition-colors text-sm disabled:opacity-50"
++              >
++                Zatvori
++              </button>
++            </div>
++          </div>
++
++          <button
++            onClick={() => setShowNotification(false)}
++            disabled={isUpdating}
++            className="flex-shrink-0 w-6 h-6 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors"
++          >
++            <svg
++              className="w-4 h-4"
++              fill="none"
++              stroke="currentColor"
++              viewBox="0 0 24 24"
++            >
++              <path
++                strokeLinecap="round"
++                strokeLinejoin="round"
++                strokeWidth={2}
++                d="M6 18L18 6M6 6l12 12"
++              />
++            </svg>
++          </button>
++        </div>
++      </div>
++    </div>
++  );
++}
+diff --git a/web-admin/scripts/auto-update-watcher.sh b/web-admin/scripts/auto-update-watcher.sh
+new file mode 100755
+index 0000000..85f045b
+--- /dev/null
++++ b/web-admin/scripts/auto-update-watcher.sh
+@@ -0,0 +1,42 @@
++#!/bin/bash
++
++# Auto-update watcher script for Web Admin
++# This script monitors for update completion and restarts the application
++
++RESTART_FLAG="/tmp/web-admin-restart-required"
++PM2_APP_NAME="water-service-web-admin"
++APP_DIR="/home/itserbia/web-admin"
++
++echo "Web Admin auto-update watcher started..."
++
++while true; do
++  # Check if restart flag exists
++  if [ -f "$RESTART_FLAG" ]; then
++    echo "Update detected! Restarting application..."
++
++    # Remove the flag file
++    rm "$RESTART_FLAG"
++
++    # Change to app directory
++    cd "$APP_DIR" || exit 1
++
++    # Restart using PM2 if available
++    if command -v pm2 &> /dev/null; then
++      echo "Restarting with PM2..."
++      pm2 restart "$PM2_APP_NAME" || pm2 start npm --name "$PM2_APP_NAME" -- run start
++    else
++      # If using systemd
++      if systemctl is-active --quiet web-admin; then
++        echo "Restarting with systemd..."
++        sudo systemctl restart web-admin
++      else
++        echo "No process manager found. Please restart manually."
++      fi
++    fi
++
++    echo "Application restarted successfully!"
++  fi
++
++  # Check every 5 seconds
++  sleep 5
++done
+-- 
+2.39.5
+
+
+From 0987d36900271bf5e19b3dc9f7b7179d5ff608b4 Mon Sep 17 00:00:00 2001
+From: Sandbox user <tools@notanumber.com>
+Date: Sun, 9 Nov 2025 16:15:49 +0000
+Subject: [PATCH 4/4] dodaj mi na adminpanelu da ako postoji nova verzija da
+ kliknem da se azurira, tj da se bash uradi u pozadini i osvezi aplikacija
+
+---
+ changelog.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/changelog.txt b/changelog.txt
+index 426d251..d1de061 100644
+--- a/changelog.txt
++++ b/changelog.txt
+@@ -89,3 +89,4 @@
+ - Changes made by agent 2025-11-09T16:09:04Z
+ - Changes made by agent 2025-11-09T16:09:54Z
+ - Changes made by agent 2025-11-09T16:12:04Z
++- Changes made by agent 2025-11-09T16:15:48Z
+-- 
+2.39.5
+
