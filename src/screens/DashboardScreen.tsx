@@ -161,65 +161,90 @@ export default function DashboardScreen() {
             </View>
           ) : (
             <View className="gap-3">
-              {tickets.slice(0, 3).map((ticket) => (
-                <View
-                  key={ticket.id}
-                  className="bg-white rounded-2xl p-4 shadow-sm"
-                >
-                  <View className="flex-row items-start justify-between mb-3">
-                    <View className="flex-1">
-                      <Text className="text-gray-900 text-base font-semibold mb-1">
-                        {ticket.deviceCode}
-                      </Text>
-                      <Text className="text-gray-500 text-sm">
-                        {ticket.technicianName}
-                      </Text>
+              {tickets.slice(0, 3).map((ticket) => {
+                const canOpen = ticket.status === "in_progress" || isSuperUser;
+                return (
+                  <Pressable
+                    key={ticket.id}
+                    onPress={() => {
+                      if (canOpen) {
+                        const setCurrentTicket = useServiceStore.getState().setCurrentTicket;
+                        setCurrentTicket(ticket);
+                        navigation.navigate("ServiceTicket");
+                      }
+                    }}
+                    disabled={!canOpen}
+                    className={`bg-white rounded-2xl p-4 shadow-sm ${canOpen ? "active:opacity-70" : "opacity-60"}`}
+                  >
+                    <View className="flex-row items-start justify-between mb-3">
+                      <View className="flex-1">
+                        <Text className="text-gray-900 text-base font-semibold mb-1">
+                          {ticket.deviceCode}
+                        </Text>
+                        <Text className="text-gray-500 text-sm">
+                          {ticket.technicianName}
+                        </Text>
+                      </View>
+                      <View className="flex-row items-center gap-2">
+                        <View
+                          className={`px-3 py-1 rounded-lg ${
+                            ticket.status === "completed"
+                              ? "bg-emerald-50"
+                              : "bg-amber-50"
+                          }`}
+                        >
+                          <Text
+                            className={`text-xs font-semibold ${
+                              ticket.status === "completed"
+                                ? "text-emerald-600"
+                                : "text-amber-600"
+                            }`}
+                          >
+                            {ticket.status === "completed" ? "Završeno" : "U toku"}
+                          </Text>
+                        </View>
+                        {canOpen && (
+                          <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+                        )}
+                      </View>
                     </View>
-                    <View
-                      className={`px-3 py-1 rounded-lg ${
-                        ticket.status === "completed"
-                          ? "bg-emerald-50"
-                          : "bg-amber-50"
-                      }`}
-                    >
-                      <Text
-                        className={`text-xs font-semibold ${
-                          ticket.status === "completed"
-                            ? "text-emerald-600"
-                            : "text-amber-600"
-                        }`}
-                      >
-                        {ticket.status === "completed" ? "Završeno" : "U toku"}
-                      </Text>
-                    </View>
-                  </View>
 
-                  <View className="flex-row items-center gap-4">
-                    <View className="flex-row items-center gap-1">
-                      <Ionicons name="time-outline" size={14} color="#6B7280" />
-                      <Text className="text-gray-600 text-xs">
-                        {format(new Date(ticket.startTime), "dd.MM.yyyy HH:mm")}
-                      </Text>
+                    <View className="flex-row items-center gap-4">
+                      <View className="flex-row items-center gap-1">
+                        <Ionicons name="time-outline" size={14} color="#6B7280" />
+                        <Text className="text-gray-600 text-xs">
+                          {format(new Date(ticket.startTime), "dd.MM.yyyy HH:mm")}
+                        </Text>
+                      </View>
+                      {ticket.operations.length > 0 && (
+                        <View className="flex-row items-center gap-1">
+                          <Ionicons name="build-outline" size={14} color="#6B7280" />
+                          <Text className="text-gray-600 text-xs">
+                            {ticket.operations.length} operacija
+                          </Text>
+                        </View>
+                      )}
+                      {ticket.spareParts.length > 0 && (
+                        <View className="flex-row items-center gap-1">
+                          <Ionicons name="cube-outline" size={14} color="#6B7280" />
+                          <Text className="text-gray-600 text-xs">
+                            {ticket.spareParts.length} delova
+                          </Text>
+                        </View>
+                      )}
                     </View>
-                    {ticket.operations.length > 0 && (
-                      <View className="flex-row items-center gap-1">
-                        <Ionicons name="build-outline" size={14} color="#6B7280" />
-                        <Text className="text-gray-600 text-xs">
-                          {ticket.operations.length} operacija
+
+                    {!canOpen && (
+                      <View className="mt-3 pt-3 border-t border-gray-100 flex-row items-center gap-2">
+                        <Ionicons name="lock-closed" size={14} color="#9CA3AF" />
+                        <Text className="text-gray-400 text-xs">
+                          Samo administrator može otvoriti završene servise
                         </Text>
                       </View>
                     )}
-                    {ticket.spareParts.length > 0 && (
-                      <View className="flex-row items-center gap-1">
-                        <Ionicons name="cube-outline" size={14} color="#6B7280" />
-                        <Text className="text-gray-600 text-xs">
-                          {ticket.spareParts.length} delova
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-                </View>
-              ))}
+                  </Pressable>
+                );
+              })}
             </View>
           )}
         </View>

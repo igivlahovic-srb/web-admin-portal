@@ -8,6 +8,7 @@ interface ServiceState {
   addTicket: (ticket: ServiceTicket) => void;
   updateTicket: (id: string, updates: Partial<ServiceTicket>) => void;
   completeTicket: (id: string) => void;
+  reopenTicket: (id: string) => void;
   setCurrentTicket: (ticket: ServiceTicket | null) => void;
   addOperationToCurrentTicket: (operation: Operation) => void;
   addSparePartToCurrentTicket: (sparePart: SparePart) => void;
@@ -37,6 +38,16 @@ export const useServiceStore = create<ServiceState>((set, get) => ({
       currentTicket:
         state.currentTicket?.id === id
           ? { ...state.currentTicket, status: "completed", endTime: new Date() }
+          : state.currentTicket,
+    })),
+  reopenTicket: (id) =>
+    set((state) => ({
+      tickets: state.tickets.map((t) =>
+        t.id === id ? { ...t, status: "in_progress", endTime: undefined } : t
+      ),
+      currentTicket:
+        state.currentTicket?.id === id
+          ? { ...state.currentTicket, status: "in_progress", endTime: undefined }
           : state.currentTicket,
     })),
   setCurrentTicket: (ticket) => set({ currentTicket: ticket }),

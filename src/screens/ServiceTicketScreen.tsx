@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useServiceStore } from "../state/serviceStore";
+import { useAuthStore } from "../state/authStore";
 import { useConfigStore } from "../state/configStore";
 import { Operation, SparePart } from "../types";
 import { LinearGradient } from "expo-linear-gradient";
@@ -22,6 +23,8 @@ export default function ServiceTicketScreen() {
   const navigation = useNavigation();
   const currentTicket = useServiceStore((s) => s.currentTicket);
   const completeTicket = useServiceStore((s) => s.completeTicket);
+  const reopenTicket = useServiceStore((s) => s.reopenTicket);
+  const user = useAuthStore((s) => s.user);
   const addOperationToCurrentTicket = useServiceStore(
     (s) => s.addOperationToCurrentTicket
   );
@@ -44,6 +47,9 @@ export default function ServiceTicketScreen() {
   const [showSparePartsModal, setShowSparePartsModal] = useState(false);
   const [operationSearchQuery, setOperationSearchQuery] = useState("");
   const [sparePartSearchQuery, setSparePartSearchQuery] = useState("");
+
+  const isSuperUser = user?.role === "super_user";
+  const isCompleted = currentTicket?.status === "completed";
 
   // Fetch config on mount if empty
   useEffect(() => {
@@ -148,6 +154,23 @@ export default function ServiceTicketScreen() {
     );
   };
 
+  const handleReopen = () => {
+    Alert.alert(
+      "Ponovo otvori servis",
+      "Da li ste sigurni da želite da ponovo otvorite ovaj servis?",
+      [
+        { text: "Otkaži", style: "cancel" },
+        {
+          text: "Otvori",
+          style: "default",
+          onPress: () => {
+            reopenTicket(currentTicket.id);
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View className="flex-1 bg-gray-50">
       {/* Connection Indicator */}
@@ -178,9 +201,9 @@ export default function ServiceTicketScreen() {
                 {currentTicket.deviceCode}
               </Text>
             </View>
-            <View className="px-3 py-1 bg-amber-50 rounded-lg">
-              <Text className="text-amber-600 text-xs font-semibold">
-                U TOKU
+            <View className={`px-3 py-1 rounded-lg ${isCompleted ? "bg-emerald-50" : "bg-amber-50"}`}>
+              <Text className={`text-xs font-semibold ${isCompleted ? "text-emerald-600" : "text-amber-600"}`}>
+                {isCompleted ? "ZAVRŠENO" : "U TOKU"}
               </Text>
             </View>
           </View>
@@ -190,13 +213,15 @@ export default function ServiceTicketScreen() {
         <View className="px-6 py-4">
           <View className="flex-row items-center justify-between mb-3">
             <Text className="text-gray-900 text-lg font-bold">Operacije</Text>
-            <Pressable
-              onPress={() => setShowOperationsModal(true)}
-              className="flex-row items-center gap-2 bg-blue-600 px-4 py-2 rounded-xl active:opacity-80"
-            >
-              <Ionicons name="add" size={18} color="#FFFFFF" />
-              <Text className="text-white text-sm font-semibold">Dodaj</Text>
-            </Pressable>
+            {!isCompleted && (
+              <Pressable
+                onPress={() => setShowOperationsModal(true)}
+                className="flex-row items-center gap-2 bg-blue-600 px-4 py-2 rounded-xl active:opacity-80"
+              >
+                <Ionicons name="add" size={18} color="#FFFFFF" />
+                <Text className="text-white text-sm font-semibold">Dodaj</Text>
+              </Pressable>
+            )}
           </View>
 
           {currentTicket.operations.length === 0 ? (
@@ -223,12 +248,14 @@ export default function ServiceTicketScreen() {
                       </Text>
                     )}
                   </View>
-                  <Pressable
-                    onPress={() => removeOperationFromCurrentTicket(op.id)}
-                    className="w-8 h-8 items-center justify-center active:opacity-60"
-                  >
-                    <Ionicons name="trash-outline" size={18} color="#EF4444" />
-                  </Pressable>
+                  {!isCompleted && (
+                    <Pressable
+                      onPress={() => removeOperationFromCurrentTicket(op.id)}
+                      className="w-8 h-8 items-center justify-center active:opacity-60"
+                    >
+                      <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                    </Pressable>
+                  )}
                 </View>
               ))}
             </View>
@@ -241,13 +268,15 @@ export default function ServiceTicketScreen() {
             <Text className="text-gray-900 text-lg font-bold">
               Rezervni delovi
             </Text>
-            <Pressable
-              onPress={() => setShowSparePartsModal(true)}
-              className="flex-row items-center gap-2 bg-emerald-600 px-4 py-2 rounded-xl active:opacity-80"
-            >
-              <Ionicons name="add" size={18} color="#FFFFFF" />
-              <Text className="text-white text-sm font-semibold">Dodaj</Text>
-            </Pressable>
+            {!isCompleted && (
+              <Pressable
+                onPress={() => setShowSparePartsModal(true)}
+                className="flex-row items-center gap-2 bg-emerald-600 px-4 py-2 rounded-xl active:opacity-80"
+              >
+                <Ionicons name="add" size={18} color="#FFFFFF" />
+                <Text className="text-white text-sm font-semibold">Dodaj</Text>
+              </Pressable>
+            )}
           </View>
 
           {currentTicket.spareParts.length === 0 ? (
@@ -274,50 +303,89 @@ export default function ServiceTicketScreen() {
                       {part.name}
                     </Text>
                   </View>
-                  <Pressable
-                    onPress={() => removeSparePartFromCurrentTicket(part.id)}
-                    className="w-8 h-8 items-center justify-center active:opacity-60"
-                  >
-                    <Ionicons name="trash-outline" size={18} color="#EF4444" />
-                  </Pressable>
+                  {!isCompleted && (
+                    <Pressable
+                      onPress={() => removeSparePartFromCurrentTicket(part.id)}
+                      className="w-8 h-8 items-center justify-center active:opacity-60"
+                    >
+                      <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                    </Pressable>
+                  )}
                 </View>
               ))}
             </View>
           )}
         </View>
 
-        {/* Complete Button */}
+        {/* Complete/Reopen Button */}
         <View className="px-6 py-6">
-          <Pressable
-            onPress={handleComplete}
-            disabled={currentTicket.operations.length === 0}
-            className="active:opacity-80"
-          >
-            <LinearGradient
-              colors={
-                currentTicket.operations.length === 0
-                  ? ["#9CA3AF", "#6B7280"]
-                  : ["#10B981", "#059669"]
-              }
-              style={{
-                borderRadius: 16,
-                paddingVertical: 18,
-                alignItems: "center",
-                flexDirection: "row",
-                justifyContent: "center",
-                gap: 8,
-              }}
-            >
-              <Ionicons name="checkmark-circle" size={24} color="#FFFFFF" />
-              <Text className="text-white text-lg font-bold">
-                Završi servis
-              </Text>
-            </LinearGradient>
-          </Pressable>
-          {currentTicket.operations.length === 0 && (
-            <Text className="text-gray-500 text-sm text-center mt-2">
-              Dodajte bar jednu operaciju da završite servis
-            </Text>
+          {isCompleted ? (
+            // Reopen button (only for super_user)
+            isSuperUser ? (
+              <Pressable
+                onPress={handleReopen}
+                className="active:opacity-80"
+              >
+                <LinearGradient
+                  colors={["#F59E0B", "#D97706"]}
+                  style={{
+                    borderRadius: 16,
+                    paddingVertical: 18,
+                    alignItems: "center",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    gap: 8,
+                  }}
+                >
+                  <Ionicons name="refresh-circle" size={24} color="#FFFFFF" />
+                  <Text className="text-white text-lg font-bold">
+                    Ponovo otvori servis
+                  </Text>
+                </LinearGradient>
+              </Pressable>
+            ) : (
+              <View className="bg-gray-100 rounded-2xl p-6 items-center">
+                <Ionicons name="lock-closed" size={32} color="#9CA3AF" />
+                <Text className="text-gray-500 text-sm mt-2 text-center">
+                  Servis je završen. Samo administrator može ponovo otvoriti servis.
+                </Text>
+              </View>
+            )
+          ) : (
+            // Complete button (only if service is in progress)
+            <>
+              <Pressable
+                onPress={handleComplete}
+                disabled={currentTicket.operations.length === 0}
+                className="active:opacity-80"
+              >
+                <LinearGradient
+                  colors={
+                    currentTicket.operations.length === 0
+                      ? ["#9CA3AF", "#6B7280"]
+                      : ["#10B981", "#059669"]
+                  }
+                  style={{
+                    borderRadius: 16,
+                    paddingVertical: 18,
+                    alignItems: "center",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    gap: 8,
+                  }}
+                >
+                  <Ionicons name="checkmark-circle" size={24} color="#FFFFFF" />
+                  <Text className="text-white text-lg font-bold">
+                    Završi servis
+                  </Text>
+                </LinearGradient>
+              </Pressable>
+              {currentTicket.operations.length === 0 && (
+                <Text className="text-gray-500 text-sm text-center mt-2">
+                  Dodajte bar jednu operaciju da završite servis
+                </Text>
+              )}
+            </>
           )}
         </View>
       </ScrollView>
