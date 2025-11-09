@@ -44,6 +44,19 @@ export default function SettingsScreen() {
   };
 
   const handleTestConnection = async () => {
+    if (!urlInput.trim()) {
+      Alert.alert("Greška", "Prvo unesite URL web panela");
+      return;
+    }
+
+    // Check if using localhost in Expo environment
+    if (urlInput.includes("localhost") || urlInput.includes("127.0.0.1")) {
+      Alert.alert(
+        "Upozorenje",
+        "Koristite 'localhost' ali ste u mobilnoj aplikaciji.\n\nZa testiranje na pravom telefonu, koristite IP adresu računara (npr. http://192.168.1.100:3000).\n\nZa Expo Go ili iOS Simulator, možete nastaviti sa testiranjem."
+      );
+    }
+
     setTesting(true);
     const success = await testConnection();
     setTesting(false);
@@ -52,8 +65,17 @@ export default function SettingsScreen() {
       Alert.alert("Uspeh", "Konekcija sa web panelom je uspešna! ✅");
     } else {
       Alert.alert(
-        "Greška",
-        "Ne mogu da se povežem sa web panelom. Proverite URL i da li je server pokrenut."
+        "Greška konekcije",
+        "Ne mogu da se povežem sa web panelom.\n\n" +
+        "Mogući razlozi:\n" +
+        "• Web panel nije pokrenut\n" +
+        "• Pogrešan URL\n" +
+        "• Koristite 'localhost' umesto IP adrese\n" +
+        "• Firewall blokira konekciju\n\n" +
+        "Saveti:\n" +
+        "• Pokrenite web panel: cd web-admin && bun dev\n" +
+        "• Koristite IP adresu računara, ne localhost\n" +
+        "• Proverite da su telefon i računar na istoj mreži"
       );
     }
   };
@@ -189,7 +211,7 @@ export default function SettingsScreen() {
               </Text>
               <TextInput
                 className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 text-base border-2 border-gray-200"
-                placeholder="http://localhost:3000"
+                placeholder="http://192.168.1.100:3000"
                 placeholderTextColor="#9CA3AF"
                 value={urlInput}
                 onChangeText={setUrlInput}
@@ -198,7 +220,7 @@ export default function SettingsScreen() {
                 keyboardType="url"
               />
               <Text className="text-gray-500 text-xs mt-2">
-                Unesite URL gde je pokrenut web admin panel
+                ⚠️ Ne koristite localhost! Unesite IP adresu računara (npr. http://192.168.1.100:3000)
               </Text>
             </View>
 
@@ -230,7 +252,7 @@ export default function SettingsScreen() {
           </View>
 
           {/* Info Card */}
-          <View className="bg-blue-50 rounded-2xl p-4 border border-blue-200">
+          <View className="bg-blue-50 rounded-2xl p-4 border border-blue-200 mb-4">
             <View className="flex-row items-start gap-3">
               <Ionicons name="information-circle" size={24} color="#3B82F6" />
               <View className="flex-1">
@@ -238,13 +260,38 @@ export default function SettingsScreen() {
                   Kako koristiti Web Admin Panel:
                 </Text>
                 <Text className="text-blue-800 text-xs leading-5">
-                  1. Pokrenite web admin panel na računaru{"\n"}
-                  2. Unesite URL servera (npr. http://192.168.1.100:3000){"\n"}
-                  3. Testirajte konekciju{"\n"}
-                  4. Kliknite &quot;Sinhronizuj sada&quot; da prebacite podatke{"\n"}
+                  1. Pokrenite web admin panel na računaru:{"\n"}
+                  {"   "}cd web-admin && bun dev{"\n"}
                   {"\n"}
-                  💡 Za lokalno testiranje koristite IP adresu računara umesto
-                  localhost
+                  2. Pronađite IP adresu računara:{"\n"}
+                  {"   "}• Windows: ipconfig{"\n"}
+                  {"   "}• Mac/Linux: ifconfig ili hostname -I{"\n"}
+                  {"\n"}
+                  3. Unesite URL sa IP adresom:{"\n"}
+                  {"   "}http://192.168.1.XXX:3000{"\n"}
+                  {"\n"}
+                  4. Sačuvajte i testirajte konekciju{"\n"}
+                  {"\n"}
+                  5. Sinhronizujte podatke{"\n"}
+                  {"\n"}
+                  ⚠️ NE koristite localhost ili 127.0.0.1!
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Warning Card */}
+          <View className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
+            <View className="flex-row items-start gap-3">
+              <Ionicons name="warning" size={24} color="#F59E0B" />
+              <View className="flex-1">
+                <Text className="text-amber-900 text-sm font-semibold mb-1">
+                  Važno:
+                </Text>
+                <Text className="text-amber-800 text-xs leading-5">
+                  • Telefon i računar moraju biti na istoj WiFi mreži{"\n"}
+                  • Web panel mora biti pokrenut pre testiranja{"\n"}
+                  • Firewall može blokirati port 3000
                 </Text>
               </View>
             </View>

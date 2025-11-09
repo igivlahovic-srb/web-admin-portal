@@ -207,19 +207,42 @@ Web panel će biti dostupan na: `http://localhost:3000`
 
 ### Sinhronizacija podataka
 
-1. **Pokrenite web admin panel** na računaru
-2. **U mobilnoj aplikaciji**:
+1. **Pokrenite web admin panel** na računaru:
+   ```bash
+   cd web-admin
+   bun install
+   bun dev
+   ```
+
+2. **Pronađite IP adresu računara** (VAŽNO - ne koristite localhost!):
+   ```bash
+   # Windows
+   ipconfig
+
+   # Mac/Linux
+   ifconfig
+   # ili
+   hostname -I
+   ```
+
+   Potražite IP adresu koja počinje sa 192.168.x.x ili 10.x.x.x
+
+3. **U mobilnoj aplikaciji**:
    - Prijavite se kao super admin (admin/admin123)
    - Idite na **Profil → Settings** (ikonica zupčanika)
-   - Unesite URL web panela:
-     - Za lokalno testiranje: `http://localhost:3000`
-     - Za pristup iz telefona: `http://192.168.X.X:3000` (koristite IP adresu računara)
+   - Unesite URL web panela sa IP adresom računara:
+     - ✅ ISPRAVNO: `http://192.168.1.100:3000`
+     - ❌ POGREŠNO: `http://localhost:3000` (NE RADI na mobilnom telefonu!)
+   - Kliknite **"Sačuvaj"** da sačuvate URL
    - Kliknite **"Testiraj konekciju"** da proverite da li radi
-   - Kliknite **"Sinhronizuj sada"** da prebacite sve podatke
+   - Ako je konekcija uspešna, kliknite **"Sinhronizuj sada"** da prebacite sve podatke
 
-3. **Prijavite se na web panel**:
+4. **Prijavite se na web panel**:
+   - Otvorite browser i idite na `http://localhost:3000` (na računaru)
    - Username: `admin`
    - Password: `admin123`
+
+**⚠️ Česta greška:** "Network request failed" znači da koristite localhost umesto IP adrese, ili da telefon i računar nisu na istoj WiFi mreži!
 
 ### Web Panel funkcionalnosti
 
