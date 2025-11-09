@@ -144,6 +144,12 @@ export default function ServicesPage() {
             >
               Servisi
             </button>
+            <button
+              onClick={() => router.push("/configuration")}
+              className="px-4 py-4 text-gray-600 hover:text-gray-900 font-medium"
+            >
+              Konfiguracija
+            </button>
           </div>
         </div>
       </nav>

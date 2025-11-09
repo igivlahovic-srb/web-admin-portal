@@ -54,14 +54,18 @@ La Fantana WHS (Water Handling System) je moderan sistem za upravljanje servisni
 - **Vizuelni indikatori**: Okvir za precizno pozicioniranje koda
 
 ### 🔧 Servisni nalog
-- **Dodavanje operacija**: Izbor iz liste operacija koje se preuzimaju sa web panela
+- **Dodavanje operacija**: Izbor iz dropdown liste sa filterima
+  - Pretraga po šifri operacije (ItemCode) ili nazivu (ItemName)
   - Operacije se konfigurišu na web admin panelu
   - Automatska sinhronizacija sa mobilnom aplikacijom
   - Prikazuju se samo aktivne operacije
-- **Rezervni delovi**: Evidencija utrošenih delova sa količinom
+  - Svaka operacija ima: ItemId, ItemCode, ItemName
+- **Rezervni delovi**: Izbor iz dropdown liste sa filterima
+  - Pretraga po šifri dela (ItemCode) ili nazivu (ItemName)
   - Rezervni delovi se konfigurišu na web admin panelu
   - Automatsko preuzimanje sa servera
   - Prikazuju se samo aktivni delovi
+  - Svaki deo ima: ItemId, ItemCode, ItemName, jedinicu mere
 - **Validacija**: Ne dozvoljava završetak bez bar jedne operacije
 - **Interaktivno brisanje**: Mogućnost uklanjanja grešaka
 
@@ -254,6 +258,8 @@ Web panel će biti dostupan na: `http://localhost:3000`
 - **🔧 Servisi**: Kompletna istorija svih servisa sa detaljima
 - **🔍 Detalji servisa**: Klik na servis pokazuje sve operacije i rezervne delove
 - **⚙️ Konfiguracija**:
+  - **Operacije tabela** sa kolonama: ItemId, ItemCode, ItemName, Opis, Status
+  - **Rezervni delovi tabela** sa kolonama: ItemId, ItemCode, ItemName, Jedinica, Status
   - Upravljanje operacijama (dodavanje, izmena, deaktivacija)
   - Upravljanje rezervnim delovima (dodavanje, izmena, deaktivacija)
   - Sinhronizacija sa mobilnom aplikacijom (Web → Mobile only)
