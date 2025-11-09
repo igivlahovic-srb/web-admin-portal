@@ -1,6 +1,6 @@
-# Water Service Web Admin Panel
+# La Fantana WHS - Web Admin Panel
 
-Web administrativna aplikacija za upravljanje i pregled podataka iz Water Service mobilne aplikacije.
+Web administrativna aplikacija za upravljanje i pregled podataka iz La Fantana WHS mobilne aplikacije.
 
 ## 🌐 Funkcionalnosti
 
@@ -210,6 +210,7 @@ Da pristupite web panelu sa drugih uređaja u istoj mreži:
 
 ---
 
+**Naziv**: La Fantana WHS - Web Admin Panel
 **Verzija**: 1.0
 **Platforma**: Web (Desktop optimizovano)
-**Kompatibilno sa**: Water Service Mobile App v1.0
+**Kompatibilno sa**: La Fantana WHS Mobile App v1.0

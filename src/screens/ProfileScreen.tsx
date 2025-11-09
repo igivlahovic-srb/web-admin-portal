@@ -316,7 +316,7 @@ export default function ProfileScreen() {
         {/* App Info */}
         <View className="px-6 pb-8 items-center">
           <Text className="text-gray-400 text-xs">
-            Water Service App v1.0
+            La Fantana WHS v1.0
           </Text>
         </View>
       </ScrollView>

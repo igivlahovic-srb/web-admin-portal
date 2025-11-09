@@ -1,10 +1,10 @@
-# Water Service App
+# La Fantana WHS - Servisni Modul
 
 Profesionalna mobilna aplikacija za servisiranje i održavanje water aparata sa bocom od 19L.
 
 ## 📱 Opis
 
-Water Service App je moderan sistem za upravljanje servisnim radovima na water aparatima. Aplikacija omogućava serviserima da brzo evidentiraju servise skeniranjem QR kodova, beleženju operacija i utrošenih rezervnih delova, dok super administratori imaju uvid u sve servise i statistiku.
+La Fantana WHS (Water Handling System) je moderan sistem za upravljanje servisnim radovima na water aparatima. Aplikacija omogućava serviserima da brzo evidentiraju servise skeniranjem QR kodova, beleženju operacija i utrošenih rezervnih delova, dok super administratori imaju uvid u sve servise i statistiku.
 
 ## ✨ Funkcionalnosti
 
@@ -283,6 +283,7 @@ Mogući dodaci za verziju 2.0:
 
 ---
 
+**Naziv**: La Fantana WHS - Servisni Modul
 **Verzija**: 1.0
 **Platforma**: iOS (optimizovano)
 **Napravljeno sa**: Vibecode AI App Builder

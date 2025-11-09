@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Water Service",
-    "slug": "water-service",
-    "scheme": "water-service",
+    "name": "La Fantana WHS servisni modul",
+    "slug": "lafantana-whs",
+    "scheme": "lafantana-whs",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.vibecode.waterservice"
+      "bundleIdentifier": "com.lafantana.whs"
     },
     "android": {
       "edgeToEdgeEnabled": true,
@@ -23,7 +23,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#3B82F6"
       },
-      "package": "com.vibecode.waterservice"
+      "package": "com.lafantana.whs"
     },
     "web": {
       "favicon": "./assets/favicon.png"
