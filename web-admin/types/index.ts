@@ -26,6 +26,7 @@ export interface Operation {
 
 export interface ServiceTicket {
   id: string;
+  serviceNumber: string; // Format: WHS1001, WHS1002, itd.
   deviceCode: string;
   deviceLocation?: string;
   technicianId: string;

@@ -28,6 +28,15 @@ export default function ConfigurationPage() {
 
   const [isLoadingSQLData, setIsLoadingSQLData] = useState(false);
 
+  // Filter states
+  const [filters, setFilters] = useState({
+    id: "",
+    code: "",
+    name: "",
+    unit: "",
+    status: "",
+  });
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch configuration data
@@ -40,6 +49,17 @@ export default function ConfigurationPage() {
     }
     fetchConfigData();
   }, []);
+
+  // Reset filters when tab changes
+  useEffect(() => {
+    setFilters({
+      id: "",
+      code: "",
+      name: "",
+      unit: "",
+      status: "",
+    });
+  }, [activeTab]);
 
   const fetchConfigData = async () => {
     setIsLoading(true);
@@ -543,7 +563,7 @@ export default function ConfigurationPage() {
 
         {/* Action Buttons - Only for operations and spareParts */}
         {(activeTab === "operations" || activeTab === "spareParts") && (
-          <div className="mt-6 flex gap-3">
+          <div className="mt-6 flex gap-3 items-center">
             <button
               onClick={openAddModal}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
@@ -572,9 +592,19 @@ export default function ConfigurationPage() {
                 ) : (
                   <>
                     <span>💾</span>
-                    Učitaj iz SQL Baze
+                    <span>Učitaj iz SQL baze</span>
                   </>
                 )}
+              </button>
+            )}
+            {/* Reset filters button */}
+            {(filters.id || filters.code || filters.name || filters.unit || filters.status) && (
+              <button
+                onClick={() => setFilters({ id: "", code: "", name: "", unit: "", status: "" })}
+                className="ml-auto px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors flex items-center gap-2"
+              >
+                <span>✕</span>
+                Resetuj filtere
               </button>
             )}
             <button
@@ -603,6 +633,10 @@ export default function ConfigurationPage() {
               onEdit={openEditModal}
               onToggle={handleToggleActive}
               onDelete={handleDelete}
+              filters={filters}
+              onFilterChange={(field, value) => {
+                setFilters((prev) => ({ ...prev, [field]: value }));
+              }}
             />
           )}
         </div>
@@ -720,13 +754,37 @@ function DataTable({
   onEdit,
   onToggle,
   onDelete,
+  filters,
+  onFilterChange,
 }: {
   items: (OperationTemplate | SparePartTemplate)[];
   type: "operations" | "spareParts";
   onEdit: (item: OperationTemplate | SparePartTemplate) => void;
   onToggle: (item: OperationTemplate | SparePartTemplate) => void;
   onDelete: (id: string) => void;
+  filters: {
+    id: string;
+    code: string;
+    name: string;
+    unit: string;
+    status: string;
+  };
+  onFilterChange: (field: string, value: string) => void;
 }) {
+  // Apply filters
+  const filteredItems = items.filter((item) => {
+    const matchesId = !filters.id || item.id.toLowerCase().includes(filters.id.toLowerCase());
+    const matchesCode = !filters.code || item.code.toLowerCase().includes(filters.code.toLowerCase());
+    const matchesName = !filters.name || item.name.toLowerCase().includes(filters.name.toLowerCase());
+    const matchesUnit = !filters.unit || (type === "spareParts" && (item as SparePartTemplate).unit?.toLowerCase().includes(filters.unit.toLowerCase()));
+    const matchesStatus = !filters.status || (
+      (filters.status === "aktivan" && item.isActive) ||
+      (filters.status === "neaktivan" && !item.isActive)
+    );
+
+    return matchesId && matchesCode && matchesName && (type === "operations" || matchesUnit) && matchesStatus;
+  });
+
   if (items.length === 0) {
     return (
       <div className="bg-white shadow-md rounded-lg p-12 text-center">
@@ -737,6 +795,12 @@ function DataTable({
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
+      {/* Results counter */}
+      <div className="px-6 py-3 bg-gray-50 border-b border-gray-200">
+        <p className="text-sm text-gray-600">
+          Prikazano <span className="font-semibold text-gray-900">{filteredItems.length}</span> od <span className="font-semibold text-gray-900">{items.length}</span> rezultata
+        </p>
+      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -766,9 +830,64 @@ function DataTable({
                 Akcije
               </th>
             </tr>
+            {/* Filter Row */}
+            <tr className="bg-white border-b border-gray-200">
+              <th className="px-6 py-2">
+                <input
+                  type="text"
+                  value={filters.id}
+                  onChange={(e) => onFilterChange("id", e.target.value)}
+                  placeholder="Filtriraj..."
+                  className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </th>
+              <th className="px-6 py-2">
+                <input
+                  type="text"
+                  value={filters.code}
+                  onChange={(e) => onFilterChange("code", e.target.value)}
+                  placeholder="Filtriraj..."
+                  className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </th>
+              <th className="px-6 py-2">
+                <input
+                  type="text"
+                  value={filters.name}
+                  onChange={(e) => onFilterChange("name", e.target.value)}
+                  placeholder="Filtriraj..."
+                  className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </th>
+              <th className="px-6 py-2">
+                {type === "spareParts" ? (
+                  <input
+                    type="text"
+                    value={filters.unit}
+                    onChange={(e) => onFilterChange("unit", e.target.value)}
+                    placeholder="Filtriraj..."
+                    className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                ) : (
+                  <div className="h-7"></div>
+                )}
+              </th>
+              <th className="px-6 py-2">
+                <select
+                  value={filters.status}
+                  onChange={(e) => onFilterChange("status", e.target.value)}
+                  className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Svi</option>
+                  <option value="aktivan">Aktivan</option>
+                  <option value="neaktivan">Neaktivan</option>
+                </select>
+              </th>
+              <th className="px-6 py-2"></th>
+            </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {items.map((item) => (
+            {filteredItems.map((item) => (
               <tr key={item.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600">
                   {item.id}
