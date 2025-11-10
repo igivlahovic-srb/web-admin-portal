@@ -5,7 +5,10 @@ export const metadata: Metadata = {
   title: "La Fantana WHS Admin Panel",
   description: "Admin panel for La Fantana water heating system management",
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.png', type: 'image/png' },
+    ],
   },
 };
 

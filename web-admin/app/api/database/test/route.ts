@@ -8,12 +8,23 @@ import { query } from "../../../../lib/db";
  */
 export async function GET(request: NextRequest) {
   try {
+    // Check if database is configured
+    if (!process.env.DB_SERVER || !process.env.DB_NAME || !process.env.DB_USER || !process.env.DB_PASSWORD) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Database nije konfigurisan. Idite na Konfiguracija → Povezivanje sa Bazom i sačuvajte podešavanja.",
+        },
+        { status: 400 }
+      );
+    }
+
     // Test query to check connection
     const result = await query("SELECT @@VERSION AS Version, GETDATE() AS CurrentDateTime");
 
     return NextResponse.json({
       success: true,
-      message: "Database connection successful",
+      message: "Konekcija uspešna!",
       data: result.recordset[0],
     });
   } catch (error: any) {
@@ -21,7 +32,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        message: "Database connection failed",
+        message: `Database connection failed: ${error.message}`,
         error: error.message,
       },
       { status: 500 }
