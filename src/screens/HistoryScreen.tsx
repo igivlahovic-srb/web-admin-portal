@@ -357,11 +357,9 @@ export default function HistoryScreen() {
               Nema servisa
             </Text>
             <Text className="text-gray-500 text-sm text-center">
-              {filter === "all"
-                ? "Još uvek nema zabeleženih servisa"
-                : filter === "completed"
-                ? "Nema završenih servisa"
-                : "Nema servisa u toku"}
+              {filter === "all" && "Još uvek nema zabeleženih servisa"}
+              {filter === "completed" && "Nema završenih servisa"}
+              {filter === "in_progress" && "Nema servisa u toku"}
             </Text>
           </View>
         ) : (
