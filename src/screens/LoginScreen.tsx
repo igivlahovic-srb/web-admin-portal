@@ -8,11 +8,13 @@ import {
   Platform,
   ActivityIndicator,
   Keyboard,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "../state/authStore";
+import * as Application from "expo-application";
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
@@ -58,8 +60,12 @@ export default function LoginScreen() {
             <View className="flex-1 justify-center px-6">
               {/* Logo/Title Section */}
               <View className="items-center mb-12">
-                <View className="w-20 h-20 bg-white rounded-full items-center justify-center mb-4 shadow-lg">
-                  <Ionicons name="water" size={40} color="#1E40AF" />
+                <View className="w-24 h-24 bg-white rounded-full items-center justify-center mb-4 shadow-lg overflow-hidden">
+                  <Image
+                    source={require("../../assets/icon.png")}
+                    style={{ width: 80, height: 80 }}
+                    resizeMode="contain"
+                  />
                 </View>
                 <Text className="text-white text-3xl font-bold mb-2">
                   La Fantana WHS
@@ -176,6 +182,19 @@ export default function LoginScreen() {
                 </Text>
                 <Text className="text-blue-100 text-xs text-center">
                   Serviser: marko / marko123
+                </Text>
+              </View>
+
+              {/* Footer with Version Info */}
+              <View className="mt-8 items-center">
+                <Text className="text-white/60 text-xs text-center mb-1">
+                  La Fantana WHS v{Application.nativeApplicationVersion || "1.0.0"}
+                </Text>
+                <Text className="text-white/50 text-xs text-center">
+                  © 2025 La Fantana. Sva prava zadržana.
+                </Text>
+                <Text className="text-white/40 text-xs text-center mt-1">
+                  Powered by Vibecode
                 </Text>
               </View>
             </View>
