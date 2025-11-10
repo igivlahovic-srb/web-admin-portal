@@ -23,7 +23,7 @@ export default function UsersPage() {
     username: "",
     password: "",
     name: "",
-    role: "technician" as "super_user" | "technician",
+    role: "technician" as "gospodar" | "super_user" | "technician",
     depot: "",
   });
 
@@ -35,7 +35,7 @@ export default function UsersPage() {
     }
 
     const parsedUser = JSON.parse(userData);
-    if (parsedUser.role !== "super_user") {
+    if (parsedUser.role !== "super_user" && parsedUser.role !== "gospodar") {
       router.push("/");
       return;
     }
@@ -167,7 +167,7 @@ export default function UsersPage() {
   const activeCount = users.filter((u) => u.isActive).length;
   const inactiveCount = users.filter((u) => !u.isActive).length;
   const technicianCount = users.filter((u) => u.role === "technician").length;
-  const adminCount = users.filter((u) => u.role === "super_user").length;
+  const adminCount = users.filter((u) => u.role === "super_user" || u.role === "gospodar").length;
 
   return (
     <div className="min-h-screen bg-gray-50">

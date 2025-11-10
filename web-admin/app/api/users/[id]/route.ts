@@ -52,9 +52,9 @@ export async function DELETE(
       );
     }
 
-    // Prevent deleting the last super_user
-    const superUsers = users.filter((u) => u.role === "super_user");
-    if (user.role === "super_user" && superUsers.length === 1) {
+    // Prevent deleting the last admin (super_user or gospodar)
+    const admins = users.filter((u) => u.role === "super_user" || u.role === "gospodar");
+    if ((user.role === "super_user" || user.role === "gospodar") && admins.length === 1) {
       return NextResponse.json(
         {
           success: false,

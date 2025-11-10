@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (role !== "super_user" && role !== "technician") {
+    if (role !== "gospodar" && role !== "super_user" && role !== "technician") {
       return NextResponse.json(
         { success: false, message: "Nevalidna uloga korisnika" },
         { status: 400 }

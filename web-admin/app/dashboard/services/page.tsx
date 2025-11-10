@@ -22,7 +22,7 @@ export default function ServicesPage() {
     }
 
     const parsedUser = JSON.parse(userData);
-    if (parsedUser.role !== "super_user") {
+    if (parsedUser.role !== "super_user" && parsedUser.role !== "gospodar") {
       router.push("/");
       return;
     }

@@ -154,7 +154,7 @@ export const dataStore = {
     const user = users.find(
       (u) => u.username === username && u.password === password && u.isActive
     );
-    if (user && user.role === "super_user") {
+    if (user && (user.role === "super_user" || user.role === "gospodar")) {
       const { password: _, ...userWithoutPassword } = user;
       return userWithoutPassword;
     }
