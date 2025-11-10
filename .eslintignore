@@ -1,0 +1,17 @@
+# Build output
+.next
+out
+build
+dist
+
+# Dependencies
+node_modules
+
+# Generated files
+*.log
+*.lock
+
+# Web admin build files
+web-admin/.next
+web-admin/out
+web-admin/build

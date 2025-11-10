@@ -12,6 +12,7 @@ expo-env.d.ts
 # Next.js
 web-admin/.next/
 web-admin/out/
+web-admin/data/
 .next/
 
 # Native

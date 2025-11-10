@@ -9,6 +9,10 @@ const nextConfig = {
   experimental: {
     externalDir: false,
   },
+  eslint: {
+    ignoreDuringBuilds: false,
+    dirs: ["app", "lib", "components", "types"],
+  },
 }
 
 module.exports = nextConfig;
