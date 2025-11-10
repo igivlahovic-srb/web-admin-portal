@@ -151,10 +151,15 @@ export const useServiceStore = create<ServiceState>()(
       syncToWeb: async () => {
         try {
           const tickets = get().tickets;
+          console.log("[ServiceStore] Syncing tickets to web. Count:", tickets.length);
+          console.log("[ServiceStore] API URL:", webAdminAPI.getApiUrl());
+
           const result = await webAdminAPI.syncTickets(tickets);
+          console.log("[ServiceStore] Sync result:", result);
+
           return result.success;
         } catch (error) {
-          console.error("Failed to sync tickets to web:", error);
+          console.error("[ServiceStore] Failed to sync tickets to web:", error);
           return false;
         }
       },

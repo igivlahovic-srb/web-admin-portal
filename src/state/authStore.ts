@@ -106,10 +106,15 @@ export const useAuthStore = create<AuthState>()(
       syncToWeb: async () => {
         try {
           const users = get().allUsers;
+          console.log("[AuthStore] Syncing users to web. Count:", users.length);
+          console.log("[AuthStore] API URL:", webAdminAPI.getApiUrl());
+
           const result = await webAdminAPI.syncUsers(users);
+          console.log("[AuthStore] Sync result:", result);
+
           return result.success;
         } catch (error) {
-          console.error("Failed to sync users to web:", error);
+          console.error("[AuthStore] Failed to sync users to web:", error);
           return false;
         }
       },
