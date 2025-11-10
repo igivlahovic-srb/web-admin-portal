@@ -210,6 +210,9 @@ export default function ServicesPage() {
                 <thead>
                   <tr className="border-b border-gray-200 bg-gray-50">
                     <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
+                      Servis No.
+                    </th>
+                    <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
                       Šifra aparata
                     </th>
                     <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
@@ -250,6 +253,9 @@ export default function ServicesPage() {
                         key={ticket.id}
                         className="border-b border-gray-100 hover:bg-gray-50"
                       >
+                        <td className="py-4 px-6 text-blue-600 font-semibold text-sm">
+                          {ticket.serviceNumber}
+                        </td>
                         <td className="py-4 px-6 font-medium text-gray-900">
                           {ticket.deviceCode}
                         </td>
@@ -333,6 +339,12 @@ export default function ServicesPage() {
               {/* Basic Info */}
               <div className="bg-gray-50 rounded-2xl p-4">
                 <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Servis No.</p>
+                    <p className="font-bold text-blue-600">
+                      {selectedTicket.serviceNumber}
+                    </p>
+                  </div>
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Šifra aparata</p>
                     <p className="font-bold text-gray-900">

@@ -103,6 +103,7 @@ export default function ScannerScreen() {
     // Create new service ticket with unique ID
     const newTicket: ServiceTicket = {
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      serviceNumber: generateServiceNumber(),
       deviceCode: data,
       technicianId: user?.id || "",
       technicianName: user?.name || "",
@@ -128,6 +129,28 @@ export default function ScannerScreen() {
     setFacing((current) => (current === "back" ? "front" : "back"));
   };
 
+  // Generate next service number in format WHS1001, WHS1002, etc.
+  const generateServiceNumber = (): string => {
+    if (tickets.length === 0) {
+      return "WHS1001";
+    }
+
+    // Extract all service numbers and find the highest
+    const serviceNumbers = tickets
+      .map((t) => t.serviceNumber)
+      .filter((num) => num && num.startsWith("WHS"))
+      .map((num) => parseInt(num.replace("WHS", ""), 10))
+      .filter((num) => !isNaN(num));
+
+    if (serviceNumbers.length === 0) {
+      return "WHS1001";
+    }
+
+    const maxNumber = Math.max(...serviceNumbers);
+    const nextNumber = maxNumber + 1;
+    return `WHS${nextNumber}`;
+  };
+
   const createTicketWithCode = (code: string) => {
     // Check if there's already an active ticket with this device code
     const existingActiveTicket = tickets.find(
@@ -143,6 +166,7 @@ export default function ScannerScreen() {
 
     const newTicket: ServiceTicket = {
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      serviceNumber: generateServiceNumber(),
       deviceCode: code,
       technicianId: user?.id || "",
       technicianName: user?.name || "",

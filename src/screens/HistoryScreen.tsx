@@ -78,6 +78,9 @@ export default function HistoryScreen() {
       >
         <View className="flex-row items-start justify-between mb-3">
           <View className="flex-1">
+            <Text className="text-blue-600 text-xs font-semibold mb-1">
+              {ticket.serviceNumber}
+            </Text>
             <Text className="text-gray-900 text-lg font-bold mb-1">
               {ticket.deviceCode}
             </Text>

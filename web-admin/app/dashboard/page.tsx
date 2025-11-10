@@ -377,6 +377,9 @@ export default function DashboardPage() {
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">
+                      Servis No.
+                    </th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">
                       Šifra aparata
                     </th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">
@@ -396,6 +399,9 @@ export default function DashboardPage() {
                 <tbody>
                   {tickets.slice(0, 10).map((ticket) => (
                     <tr key={ticket.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="py-3 px-4 text-blue-600 font-semibold text-sm">
+                        {ticket.serviceNumber}
+                      </td>
                       <td className="py-3 px-4 font-medium text-gray-900">
                         {ticket.deviceCode}
                       </td>

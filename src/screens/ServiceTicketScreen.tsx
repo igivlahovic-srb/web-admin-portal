@@ -195,6 +195,12 @@ export default function ServiceTicketScreen() {
             </View>
             <View className="flex-1">
               <Text className="text-gray-500 text-xs font-medium mb-1">
+                Servis No.
+              </Text>
+              <Text className="text-blue-600 text-base font-bold mb-2">
+                {currentTicket.serviceNumber}
+              </Text>
+              <Text className="text-gray-500 text-xs font-medium mb-1">
                 Uređaj
               </Text>
               <Text className="text-gray-900 text-xl font-bold">
