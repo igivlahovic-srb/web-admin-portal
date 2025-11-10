@@ -161,6 +161,31 @@ class WebAdminAPI {
       };
     }
   }
+
+  // Fetch spare parts from web admin panel (from SQL database)
+  async fetchSpareParts(): Promise<SyncResponse> {
+    try {
+      const response = await fetch(`${this.apiUrl}/api/spare-parts`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return { success: true, data };
+    } catch (error) {
+      console.error('Error fetching spare parts:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
 }
 
 // Singleton instance

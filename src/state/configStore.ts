@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { OperationTemplate, SparePartTemplate } from "../types";
 import { useSyncStore } from "./syncStore";
+import webAdminAPI from "../api/web-admin-sync";
 
 interface ConfigState {
   operations: OperationTemplate[];
@@ -13,6 +14,7 @@ interface ConfigState {
   setOperations: (operations: OperationTemplate[]) => void;
   setSpareParts: (spareParts: SparePartTemplate[]) => void;
   fetchConfig: () => Promise<boolean>;
+  fetchSparePartsFromSQL: () => Promise<boolean>;
   checkConnection: () => Promise<boolean>;
 }
 
@@ -152,6 +154,35 @@ export const useConfigStore = create<ConfigState>()(
             lastConfigSync: new Date(),
             isLoading: false,
           });
+          return false;
+        }
+      },
+
+      // Fetch spare parts from SQL database (ItemCode starting with "102")
+      fetchSparePartsFromSQL: async () => {
+        try {
+          console.log("[ConfigStore] Fetching spare parts from SQL database...");
+          const result = await webAdminAPI.fetchSpareParts();
+
+          if (result.success && result.data && result.data.spareParts) {
+            const spareParts = result.data.spareParts.map((part: any) => ({
+              id: part.id,
+              code: part.code,
+              name: part.name,
+              unit: "kom", // Default unit
+              isActive: true,
+              createdAt: new Date(),
+            }));
+
+            console.log("[ConfigStore] Loaded spare parts from SQL:", spareParts.length);
+            set({ spareParts, lastConfigSync: new Date() });
+            return true;
+          }
+
+          console.warn("[ConfigStore] Failed to fetch spare parts from SQL");
+          return false;
+        } catch (error) {
+          console.error("[ConfigStore] Error fetching spare parts from SQL:", error);
           return false;
         }
       },
