@@ -13,9 +13,20 @@ export async function POST() {
     const rootDir = path.resolve(process.cwd(), "..");
     console.log("Root directory:", rootDir);
 
-    // Pull latest changes from git
-    console.log("Pulling latest changes from git...");
-    await execAsync("git pull origin main", { cwd: rootDir });
+    // Add vibecode remote if it doesn't exist
+    console.log("Configuring git remote...");
+    try {
+      await execAsync(
+        'git remote add vibecode https://019a6624-8c70-7588-b2d9-2c35197b6d10:notrequired@git.vibecodeapp.com/019a6624-8c70-7588-b2d9-2c35197b6d10.git',
+        { cwd: rootDir }
+      );
+    } catch {
+      // Remote already exists, that's fine
+    }
+
+    // Pull latest changes from Vibecode git
+    console.log("Pulling latest changes from Vibecode git...");
+    await execAsync("git pull vibecode main", { cwd: rootDir });
 
     // Install dependencies in web-admin
     console.log("Installing dependencies for web-admin...");
@@ -25,10 +36,24 @@ export async function POST() {
     console.log("Building web-admin application...");
     await execAsync("bun run build", { cwd: process.cwd() });
 
-    // Note: The application restart needs to be handled by PM2 or systemd
-    // We'll create a flag file that the process manager can monitor
-    const fs = require("fs");
-    fs.writeFileSync("/tmp/web-admin-restart-required", "1");
+    // Restart the service
+    console.log("Restarting service...");
+    try {
+      // Try PM2 first
+      await execAsync("pm2 restart lafantana-whs-admin");
+      console.log("Service restarted with PM2");
+    } catch {
+      // Try systemd
+      try {
+        await execAsync("sudo systemctl restart lafantana-admin");
+        console.log("Service restarted with systemd");
+      } catch (sysError) {
+        console.warn("Could not restart service automatically:", sysError);
+        // Create flag file as fallback
+        const fs = require("fs");
+        fs.writeFileSync("/tmp/web-admin-restart-required", "1");
+      }
+    }
 
     console.log("Update completed successfully!");
 
