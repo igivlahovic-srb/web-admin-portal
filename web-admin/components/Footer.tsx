@@ -4,7 +4,6 @@ import React from "react";
 
 export default function Footer() {
   const version = "2.1.0";
-  const year = new Date().getFullYear();
 
   return (
     <footer className="mt-auto py-4 px-6 border-t border-gray-200 bg-white">
@@ -17,7 +16,7 @@ export default function Footer() {
         </div>
 
         <div className="flex items-center gap-2">
-          <span>© {year} La Fantana IT Serbia</span>
+          <span>© 2025 La Fantana IT Serbia</span>
           <span className="text-gray-400">|</span>
           <span>Powered by <span className="font-semibold text-blue-600">La Fantana IT Serbia</span></span>
         </div>
