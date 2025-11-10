@@ -26,7 +26,25 @@ export async function POST() {
 
     // Pull latest changes from Vibecode git
     console.log("Pulling latest changes from Vibecode git...");
+
+    // Stash any local changes (like .env.local) before pulling
+    try {
+      await execAsync("git stash", { cwd: rootDir });
+      console.log("Stashed local changes");
+    } catch {
+      // No changes to stash, that's fine
+    }
+
+    // Pull from vibecode
     await execAsync("git pull vibecode main", { cwd: rootDir });
+
+    // Restore stashed changes
+    try {
+      await execAsync("git stash pop", { cwd: rootDir });
+      console.log("Restored local changes");
+    } catch {
+      // No stash to pop, that's fine
+    }
 
     // Install dependencies in web-admin
     console.log("Installing dependencies for web-admin...");
