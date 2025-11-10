@@ -197,7 +197,7 @@ export default function HistoryScreen() {
                 filter === "all" ? "text-white" : "text-gray-600"
               }`}
             >
-              {"Svi ("}{tickets.length}{")"}
+              Svi ({tickets.length})
             </Text>
           </Pressable>
           <Pressable
@@ -211,7 +211,7 @@ export default function HistoryScreen() {
                 filter === "in_progress" ? "text-white" : "text-gray-600"
               }`}
             >
-              {"U toku ("}{tickets.filter((t) => t.status === "in_progress").length}{")"}
+              U toku ({tickets.filter((t) => t.status === "in_progress").length})
             </Text>
           </Pressable>
           <Pressable
@@ -225,7 +225,7 @@ export default function HistoryScreen() {
                 filter === "completed" ? "text-white" : "text-gray-600"
               }`}
             >
-              {"Završeno ("}{tickets.filter((t) => t.status === "completed").length}{")"}
+              Završeno ({tickets.filter((t) => t.status === "completed").length})
             </Text>
           </Pressable>
         </View>
@@ -238,7 +238,7 @@ export default function HistoryScreen() {
           <View className="flex-row items-center gap-2">
             <Ionicons name="calendar-outline" size={20} color="#6B7280" />
             <Text className="text-gray-700 text-sm font-medium">
-              {format(dateFrom, "dd.MM.yyyy")}{" - "}{format(dateTo, "dd.MM.yyyy")}
+              {format(dateFrom, "dd.MM.yyyy")} - {format(dateTo, "dd.MM.yyyy")}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
