@@ -194,7 +194,7 @@ export default function LoginScreen() {
                   © 2025 La Fantana. Sva prava zadržana.
                 </Text>
                 <Text className="text-white/40 text-xs text-center mt-1">
-                  Powered by Vibecode
+                  Powered by La Fantana IT Serbia
                 </Text>
               </View>
             </View>
