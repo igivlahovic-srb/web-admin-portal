@@ -9,9 +9,8 @@ const nextConfig = {
   experimental: {
     externalDir: false,
   },
-  eslint: {
-    ignoreDuringBuilds: false,
-    dirs: ["app", "lib", "components", "types"],
+  turbopack: {
+    root: __dirname,
   },
 }
 
