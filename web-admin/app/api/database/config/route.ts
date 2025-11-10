@@ -91,9 +91,33 @@ export async function POST(request: Request) {
     // Write updated env file
     await writeFile(envPath, newEnvContent, "utf-8");
 
+    // Try to restart the service automatically
+    let restartMessage = "";
+    try {
+      const { exec } = require("child_process");
+      const { promisify } = require("util");
+      const execAsync = promisify(exec);
+
+      // Try systemd first
+      try {
+        await execAsync("sudo systemctl restart lafantana-admin");
+        restartMessage = " Servis je automatski restartovan.";
+      } catch {
+        // Try PM2
+        try {
+          await execAsync("pm2 restart lafantana-whs-admin");
+          restartMessage = " Servis je automatski restartovan.";
+        } catch {
+          restartMessage = " Molimo restartujte aplikaciju ručno da bi promene stupile na snagu.";
+        }
+      }
+    } catch {
+      restartMessage = " Molimo restartujte aplikaciju ručno da bi promene stupile na snagu.";
+    }
+
     return NextResponse.json({
       success: true,
-      message: "Konfiguracija uspešno sačuvana. Restartujte aplikaciju da bi promene stupile na snagu.",
+      message: "Konfiguracija uspešno sačuvana." + restartMessage,
     });
   } catch (error) {
     console.error("Error saving database config:", error);
