@@ -27,23 +27,39 @@ export async function POST() {
     // Pull latest changes from Vibecode git
     console.log("Pulling latest changes from Vibecode git...");
 
-    // Stash any local changes (like .env.local) before pulling
+    // Backup .env.local before pulling
+    const envLocalPath = path.join(rootDir, "web-admin", ".env.local");
+    let envBackup = "";
     try {
-      await execAsync("git stash", { cwd: rootDir });
-      console.log("Stashed local changes");
+      const fs = require("fs");
+      if (fs.existsSync(envLocalPath)) {
+        envBackup = fs.readFileSync(envLocalPath, "utf-8");
+        console.log("Backed up .env.local");
+      }
+    } catch (err) {
+      console.warn("Could not backup .env.local:", err);
+    }
+
+    // Reset any local changes to tracked files
+    try {
+      await execAsync("git reset --hard", { cwd: rootDir });
+      console.log("Reset local changes");
     } catch {
-      // No changes to stash, that's fine
+      // If reset fails, continue anyway
     }
 
     // Pull from vibecode
     await execAsync("git pull vibecode main", { cwd: rootDir });
 
-    // Restore stashed changes
-    try {
-      await execAsync("git stash pop", { cwd: rootDir });
-      console.log("Restored local changes");
-    } catch {
-      // No stash to pop, that's fine
+    // Restore .env.local backup
+    if (envBackup) {
+      try {
+        const fs = require("fs");
+        fs.writeFileSync(envLocalPath, envBackup, "utf-8");
+        console.log("Restored .env.local from backup");
+      } catch (err) {
+        console.warn("Could not restore .env.local:", err);
+      }
     }
 
     // Install dependencies in web-admin
