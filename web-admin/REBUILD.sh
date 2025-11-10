@@ -12,22 +12,27 @@ echo ""
 
 cd ~/webadminportal/web-admin
 
-echo "Step 1/5: Stopping PM2 process..."
+echo "Step 1/6: Stopping all processes on port 3002..."
 pm2 stop lafantana-whs-admin 2>/dev/null || true
 pm2 stop water-service-web-admin 2>/dev/null || true
 pm2 delete lafantana-whs-admin 2>/dev/null || true
 pm2 delete water-service-web-admin 2>/dev/null || true
-echo "✓ PM2 stopped"
+
+# Kill any process using port 3002
+echo "Killing any process on port 3002..."
+fuser -k 3002/tcp 2>/dev/null || true
+sleep 2
+echo "✓ Port 3002 cleared"
 echo ""
 
-echo "Step 2/5: Cleaning old build files..."
+echo "Step 2/6: Cleaning old build files..."
 rm -rf .next
 rm -rf node_modules
 rm -rf bun.lock
 echo "✓ Cleaned"
 echo ""
 
-echo "Step 3/5: Installing dependencies..."
+echo "Step 3/6: Installing dependencies..."
 bun install
 if [ $? -ne 0 ]; then
     echo "Error installing dependencies!"
@@ -36,7 +41,7 @@ fi
 echo "✓ Dependencies installed"
 echo ""
 
-echo "Step 4/5: Building application..."
+echo "Step 4/6: Building application..."
 bun run build
 if [ $? -ne 0 ]; then
     echo "Error building application!"
@@ -45,7 +50,16 @@ fi
 echo "✓ Build completed"
 echo ""
 
-echo "Step 5/5: Starting PM2..."
+echo "Step 5/6: Verifying port is free..."
+if lsof -Pi :3002 -sTCP:LISTEN -t >/dev/null 2>&1 ; then
+    echo "Port 3002 is still in use, killing again..."
+    fuser -k 3002/tcp 2>/dev/null || true
+    sleep 2
+fi
+echo "✓ Port is free"
+echo ""
+
+echo "Step 6/6: Starting PM2..."
 pm2 start "bun run start" --name lafantana-whs-admin
 pm2 save
 echo "✓ PM2 started"
