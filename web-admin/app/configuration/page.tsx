@@ -1501,6 +1501,25 @@ function UbuntuSystemTab() {
             </p>
           </div>
 
+          {/* RAM Memory */}
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600 mb-1">RAM Memorija</p>
+            <p className="text-lg font-semibold text-gray-900">
+              {systemInfo?.ramMemory?.used || "0"} / {systemInfo?.ramMemory?.total || "0"}
+            </p>
+            <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+              <div
+                className={`h-2 rounded-full ${
+                  (systemInfo?.ramMemory?.percentage || 0) > 80 ? "bg-red-500" : "bg-blue-500"
+                }`}
+                style={{ width: `${systemInfo?.ramMemory?.percentage || 0}%` }}
+              ></div>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              {systemInfo?.ramMemory?.percentage || 0}% iskorišćeno • {systemInfo?.ramMemory?.available || "0"} dostupno
+            </p>
+          </div>
+
           {/* Update Status */}
           <div className="p-4 bg-gray-50 rounded-lg">
             <p className="text-sm text-gray-600 mb-1">Status Ažuriranja</p>

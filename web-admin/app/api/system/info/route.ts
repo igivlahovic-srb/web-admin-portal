@@ -28,6 +28,18 @@ export async function GET() {
     const [used, total, percentageStr] = diskSpaceRaw.trim().split(" ");
     const percentage = parseInt(percentageStr.replace("%", ""));
 
+    // Get RAM information
+    const { stdout: ramInfoRaw } = await execAsync(
+      "free -h | grep Mem | awk '{print $2, $3, $7}'"
+    );
+    const [ramTotal, ramUsed, ramAvailable] = ramInfoRaw.trim().split(" ");
+
+    // Calculate RAM percentage
+    const { stdout: ramPercentageRaw } = await execAsync(
+      "free | grep Mem | awk '{print ($3/$2) * 100.0}'"
+    );
+    const ramPercentage = Math.round(parseFloat(ramPercentageRaw.trim()));
+
     // Check for updates
     let updateAvailable = false;
     try {
@@ -77,6 +89,12 @@ export async function GET() {
           used,
           total,
           percentage,
+        },
+        ramMemory: {
+          total: ramTotal,
+          used: ramUsed,
+          available: ramAvailable,
+          percentage: ramPercentage,
         },
         updateAvailable,
         gitVersion,
