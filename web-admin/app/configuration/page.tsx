@@ -882,7 +882,53 @@ function DatabaseConnectionTab() {
   });
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [testResult, setTestResult] = useState<string | null>(null);
+
+  // Load existing config on mount
+  useEffect(() => {
+    const loadConfig = async () => {
+      try {
+        const response = await fetch("/api/database/config");
+        const data = await response.json();
+        if (data.success && data.data) {
+          setDbConfig(data.data);
+        }
+      } catch (error) {
+        console.error("Error loading config:", error);
+      }
+    };
+    loadConfig();
+  }, []);
+
+  const handleSaveConfig = async () => {
+    if (!dbConfig.server || !dbConfig.database || !dbConfig.username || !dbConfig.password) {
+      alert("Sva polja su obavezna!");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const response = await fetch("/api/database/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dbConfig),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Konfiguracija uspešno sačuvana! Restartujte aplikaciju da bi promene stupile na snagu.");
+      } else {
+        alert(`Greška: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error saving config:", error);
+      alert("Greška pri snimanju konfiguracije");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleTestConnection = async () => {
     setIsLoading(true);
@@ -920,7 +966,7 @@ function DatabaseConnectionTab() {
         <div className="space-y-4 max-w-2xl">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Server
+              Server <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -935,7 +981,7 @@ function DatabaseConnectionTab() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Baza podataka
+              Baza podataka <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -951,7 +997,7 @@ function DatabaseConnectionTab() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Korisničko ime
+                Korisničko ime <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -966,7 +1012,7 @@ function DatabaseConnectionTab() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Lozinka
+                Lozinka <span className="text-red-500">*</span>
               </label>
               <input
                 type="password"
@@ -997,6 +1043,13 @@ function DatabaseConnectionTab() {
 
           <div className="flex gap-3 pt-4">
             <button
+              onClick={handleSaveConfig}
+              disabled={isSaving}
+              className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+            >
+              {isSaving ? "Snimanje..." : "Snimi konfiguraciju"}
+            </button>
+            <button
               onClick={handleTestConnection}
               disabled={isLoading}
               className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1025,9 +1078,7 @@ function DatabaseConnectionTab() {
 
           <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
             <p className="text-sm text-yellow-800">
-              <strong>Napomena:</strong> Konfiguracija baze se čuva u environment
-              varijablama (.env.local fajl). Za promene na produkciji, ažurirajte
-              environment varijable na serveru i restartujte aplikaciju.
+              <strong>Napomena:</strong> Nakon snimanja konfiguracije, morate restartovati aplikaciju da bi promene stupile na snagu.
             </p>
           </div>
 
