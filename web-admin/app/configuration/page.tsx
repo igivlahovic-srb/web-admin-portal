@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { OperationTemplate, SparePartTemplate } from "../../types";
+import { OperationTemplate, SparePartTemplate, User } from "../../types";
 import Navigation from "../../components/Navigation";
 
 export default function ConfigurationPage() {
@@ -9,6 +9,7 @@ export default function ConfigurationPage() {
   const [spareParts, setSpareParts] = useState<SparePartTemplate[]>([]);
   const [activeTab, setActiveTab] = useState<"operations" | "spareParts" | "database" | "deviceTypes">("operations");
   const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState<"gospodar" | "super_user" | "technician" | null>(null);
 
   // Modals
   const [showAddModal, setShowAddModal] = useState(false);
@@ -31,6 +32,12 @@ export default function ConfigurationPage() {
 
   // Fetch configuration data
   useEffect(() => {
+    // Get user role from session storage
+    const userData = sessionStorage.getItem("admin-user");
+    if (userData) {
+      const parsedUser: User = JSON.parse(userData);
+      setUserRole(parsedUser.role);
+    }
     fetchConfigData();
   }, []);
 
@@ -214,19 +221,24 @@ export default function ConfigurationPage() {
     }
   };
 
-  // Load spare parts from SQL database
+  // Load operations or spare parts from SQL database
   const handleLoadFromSQL = async () => {
-    if (activeTab !== "spareParts") return;
+    if (activeTab !== "spareParts" && activeTab !== "operations") return;
 
-    if (!confirm("Da li želite da učitate rezervne delove iz SQL baze? Ovo će dodati nove stavke u konfiguraciju.")) {
+    const isOperations = activeTab === "operations";
+    const itemType = isOperations ? "operacije" : "rezervne delove";
+    const itemTypeSingular = isOperations ? "operacija" : "rezervnih delova";
+
+    if (!confirm(`Da li želite da učitate ${itemType} iz SQL baze? Ovo će dodati nove stavke u konfiguraciju.`)) {
       return;
     }
 
     setIsLoadingSQLData(true);
 
     try {
-      // Fetch spare parts from SQL
-      const response = await fetch("/api/spare-parts");
+      // Fetch data from SQL
+      const endpoint = isOperations ? "/api/operations" : "/api/spare-parts";
+      const response = await fetch(endpoint);
       const data = await response.json();
 
       if (!data.success) {
@@ -235,53 +247,67 @@ export default function ConfigurationPage() {
         return;
       }
 
-      const sqlSpareParts = data.data.spareParts || [];
+      const sqlItems = isOperations ? (data.data.operations || []) : (data.data.spareParts || []);
 
-      if (sqlSpareParts.length === 0) {
-        alert("Nije pronađen nijedan rezervni deo u SQL bazi");
+      if (sqlItems.length === 0) {
+        alert(`Nije pronađena nijedna stavka u SQL bazi`);
         setIsLoadingSQLData(false);
         return;
       }
 
       // Check for duplicates and add new items
-      const existingCodes = spareParts.map((sp) => sp.code);
-      const existingIds = spareParts.map((sp) => sp.id);
+      const existingItems = isOperations ? operations : spareParts;
+      const existingCodes = existingItems.map((item) => item.code);
+      const existingIds = existingItems.map((item) => item.id);
 
-      const newItems = sqlSpareParts.filter(
+      const newItems = sqlItems.filter(
         (item: any) => !existingIds.includes(item.id) && !existingCodes.includes(item.code)
       );
 
       if (newItems.length === 0) {
-        alert(`Svi rezervni delovi iz SQL baze već postoje u konfiguraciji (${sqlSpareParts.length} pronađeno)`);
+        alert(`Sve stavke iz SQL baze već postoje u konfiguraciji (${sqlItems.length} pronađeno)`);
         setIsLoadingSQLData(false);
         return;
       }
 
       // Import new items
-      const importResponse = await fetch("/api/config/spare-parts/import", {
+      const importEndpoint = isOperations
+        ? "/api/config/operations/import"
+        : "/api/config/spare-parts/import";
+
+      const importResponse = await fetch(importEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: newItems.map((item: any) => ({
-            id: item.id,
-            code: item.code,
-            name: item.name,
-            unit: "kom",
-          })),
+          items: newItems.map((item: any) =>
+            isOperations
+              ? {
+                  id: item.id,
+                  code: item.code,
+                  name: item.name,
+                  description: "",
+                }
+              : {
+                  id: item.id,
+                  code: item.code,
+                  name: item.name,
+                  unit: "kom",
+                }
+          ),
         }),
       });
 
       const importResult = await importResponse.json();
 
       if (importResult.success) {
-        alert(`Uspešno učitano ${newItems.length} novih rezervnih delova iz SQL baze!\n\nUkupno u SQL bazi: ${sqlSpareParts.length}\nDodato novih: ${newItems.length}\nVeć postojalo: ${sqlSpareParts.length - newItems.length}`);
+        alert(`Uspešno učitano ${newItems.length} novih stavki iz SQL baze!\n\nUkupno u SQL bazi: ${sqlItems.length}\nDodato novih: ${newItems.length}\nVeć postojalo: ${sqlItems.length - newItems.length}`);
         fetchConfigData();
       } else {
-        alert(importResult.message || "Greška pri import-u rezervnih delova");
+        alert(importResult.message || `Greška pri import-u ${itemTypeSingular}`);
       }
     } catch (error) {
       console.error("Error loading from SQL:", error);
-      alert("Greška pri učitavanju rezervnih delova iz SQL baze. Proverite da li je baza podataka pravilno konfigurisana.");
+      alert(`Greška pri učitavanju ${itemTypeSingular} iz SQL baze. Proverite da li je baza podataka pravilno konfigurisana.`);
     } finally {
       setIsLoadingSQLData(false);
     }
@@ -500,16 +526,18 @@ export default function ConfigurationPage() {
             >
               Tipovi Uređaja
             </button>
-            <button
-              onClick={() => setActiveTab("database")}
-              className={`${
-                activeTab === "database"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-            >
-              Povezivanje sa Bazom
-            </button>
+            {userRole === "gospodar" && (
+              <button
+                onClick={() => setActiveTab("database")}
+                className={`${
+                  activeTab === "database"
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+              >
+                Povezivanje sa Bazom
+              </button>
+            )}
           </nav>
         </div>
 
@@ -530,7 +558,7 @@ export default function ConfigurationPage() {
               <span>📊</span>
               Import iz CSV/Excel
             </button>
-            {activeTab === "spareParts" && (
+            {(activeTab === "spareParts" || activeTab === "operations") && (
               <button
                 onClick={handleLoadFromSQL}
                 disabled={isLoadingSQLData}

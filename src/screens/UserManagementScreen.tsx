@@ -292,19 +292,25 @@ export default function UserManagementScreen() {
                       <View className="flex-row items-center gap-2">
                         <View
                           className={`px-2 py-1 rounded-lg ${
-                            user.role === "super_user"
+                            user.role === "gospodar"
+                              ? "bg-amber-50"
+                              : user.role === "super_user"
                               ? "bg-purple-50"
                               : "bg-blue-50"
                           }`}
                         >
                           <Text
                             className={`text-xs font-semibold ${
-                              user.role === "super_user"
+                              user.role === "gospodar"
+                                ? "text-amber-600"
+                                : user.role === "super_user"
                                 ? "text-purple-600"
                                 : "text-blue-600"
                             }`}
                           >
-                            {user.role === "super_user"
+                            {user.role === "gospodar"
+                              ? "GOSPODAR"
+                              : user.role === "super_user"
                               ? "Administrator"
                               : "Serviser"}
                           </Text>
@@ -504,7 +510,7 @@ export default function UserManagementScreen() {
                   <Text className="text-gray-700 text-sm font-semibold mb-2">
                     Uloga *
                   </Text>
-                  <View className="flex-row gap-2">
+                  <View className="flex-row gap-2 mb-2">
                     <Pressable
                       onPress={() => setFormRole("technician")}
                       className={`flex-1 rounded-xl px-4 py-4 border-2 ${
@@ -542,6 +548,24 @@ export default function UserManagementScreen() {
                       </Text>
                     </Pressable>
                   </View>
+                  <Pressable
+                    onPress={() => setFormRole("gospodar")}
+                    className={`rounded-xl px-4 py-4 border-2 ${
+                      formRole === "gospodar"
+                        ? "bg-amber-50 border-amber-600"
+                        : "bg-white border-gray-200"
+                    }`}
+                  >
+                    <Text
+                      className={`text-center text-base font-semibold ${
+                        formRole === "gospodar"
+                          ? "text-amber-600"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      {"GOSPODAR (pun pristup)"}
+                    </Text>
+                  </Pressable>
                 </View>
               </View>
 
@@ -652,7 +676,7 @@ export default function UserManagementScreen() {
                   <Text className="text-gray-700 text-sm font-semibold mb-2">
                     Uloga *
                   </Text>
-                  <View className="flex-row gap-2">
+                  <View className="flex-row gap-2 mb-2">
                     <Pressable
                       onPress={() => setFormRole("technician")}
                       className={`flex-1 rounded-xl px-4 py-4 border-2 ${
@@ -690,6 +714,24 @@ export default function UserManagementScreen() {
                       </Text>
                     </Pressable>
                   </View>
+                  <Pressable
+                    onPress={() => setFormRole("gospodar")}
+                    className={`rounded-xl px-4 py-4 border-2 ${
+                      formRole === "gospodar"
+                        ? "bg-amber-50 border-amber-600"
+                        : "bg-white border-gray-200"
+                    }`}
+                  >
+                    <Text
+                      className={`text-center text-base font-semibold ${
+                        formRole === "gospodar"
+                          ? "text-amber-600"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      {"GOSPODAR (pun pristup)"}
+                    </Text>
+                  </Pressable>
                 </View>
               </View>
 

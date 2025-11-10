@@ -380,7 +380,11 @@ export default function UsersPage() {
                         </span>
                       </td>
                       <td className="py-4 px-6">
-                        {u.role === "super_user" ? (
+                        {u.role === "gospodar" ? (
+                          <span className="inline-block px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold">
+                            GOSPODAR
+                          </span>
+                        ) : u.role === "super_user" ? (
                           <span className="inline-block px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold">
                             Administrator
                           </span>
@@ -557,11 +561,12 @@ export default function UsersPage() {
                 </label>
                 <select
                   value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value as "super_user" | "technician" })}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value as "gospodar" | "super_user" | "technician" })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="technician">Serviser</option>
                   <option value="super_user">Administrator</option>
+                  <option value="gospodar">GOSPODAR (pun pristup)</option>
                 </select>
               </div>
 
