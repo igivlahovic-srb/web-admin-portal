@@ -52,7 +52,7 @@ export async function GET() {
     }
 
     // Get Git information
-    const gitDir = "/home/user/workspace/web-admin";
+    const gitDir = "/home/user/workspace";
 
     let gitVersion = "Unknown";
     try {
