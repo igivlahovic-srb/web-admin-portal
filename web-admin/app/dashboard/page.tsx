@@ -379,7 +379,7 @@ export default function DashboardPage() {
         {/* Recent Services */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">
-            Nedavni servisi
+            Poslednjih 5 aktivnosti
           </h2>
 
           {tickets.length === 0 ? (
@@ -430,7 +430,7 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {tickets.slice(0, 10).map((ticket) => (
+                  {tickets.slice(0, 5).map((ticket) => (
                     <tr key={ticket.id} className="border-b border-gray-100 hover:bg-gray-50">
                       <td className="py-3 px-4 text-blue-600 font-semibold text-sm">
                         {ticket.serviceNumber}
