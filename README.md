@@ -31,8 +31,12 @@ Za generisanje novih ikona sa belim slovima:
   - `HistoryScreen.tsx`: Dodato `<Text>` wrapping za "x" i "min" literale (linije 163, 110)
   - `DashboardScreen.tsx`: Dodato `<Text>` wrapping za "operacija" i "delova" (linije 301, 309)
   - `ServiceTicketScreen.tsx`: Refaktorisano prikazivanje trajanja da koristi nested Text (linija 261)
+- **Login Screen Logo**: Kompletan redizajn logoa na login ekranu
+  - ❌ Uklonjeno: Beli kvadrat pozadina (`bg-white`), shadow efekti, Image komponenta
+  - ✅ Dodato: Direktan text prikaz sa čistim belim slovima na transparentnoj pozadini
+  - ✅ Uvećan logo: `text-5xl` (60px) za "LA FANTANA", `text-4xl` (48px) za "WHS"
+  - ✅ Perfektna vidljivost na plavom gradijent pozadini
 - **Ikone**: Ažurirane aplikacione ikone sa belim slovima na plavom gradijent pozadini
-- **LoginScreen**: Prikazan La Fantana logo umesto generičke ikone
 
 ### 🆕 Nove Funkcionalnosti
 - **Icon Generator Tool**: HTML generator za kreiranje ikona sa custom tipografijom (`generate-icons.html`)

@@ -8,7 +8,6 @@ import {
   Platform,
   ActivityIndicator,
   Keyboard,
-  Image,
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -124,17 +123,13 @@ export default function LoginScreen() {
             <View className="flex-1 justify-center px-6">
               {/* Logo/Title Section */}
               <View className="items-center mb-12">
-                <View className="w-32 h-32 bg-white rounded-3xl items-center justify-center mb-6 shadow-2xl p-4">
-                  <Image
-                    source={require("../../assets/logo.png")}
-                    style={{ width: "100%", height: "100%" }}
-                    resizeMode="contain"
-                  />
-                </View>
-                <Text className="text-white text-3xl font-bold mb-2">
-                  La Fantana WHS
+                <Text className="text-white text-5xl font-extrabold tracking-tight mb-2">
+                  LA FANTANA
                 </Text>
-                <Text className="text-blue-100 text-base text-center font-medium">
+                <Text className="text-white text-4xl font-bold mb-3">
+                  WHS
+                </Text>
+                <Text className="text-blue-100 text-lg text-center font-medium">
                   Servisni Modul
                 </Text>
 

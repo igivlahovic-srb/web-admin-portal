@@ -1,0 +1,19 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Transparent background -->
+  <rect width="512" height="512" fill="none"/>
+
+  <!-- White text "LA FANTANA" -->
+  <text x="256" y="220" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#FFFFFF" text-anchor="middle">
+    LA FANTANA
+  </text>
+
+  <!-- White text "WHS" -->
+  <text x="256" y="280" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="#FFFFFF" text-anchor="middle">
+    WHS
+  </text>
+
+  <!-- White text "SERVISNI MODUL" (smaller) -->
+  <text x="256" y="320" font-family="Arial, sans-serif" font-size="24" font-weight="normal" fill="#E0E0E0" text-anchor="middle">
+    SERVISNI MODUL
+  </text>
+</svg>

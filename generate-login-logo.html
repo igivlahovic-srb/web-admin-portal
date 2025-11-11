@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Fantana Logo Generator - Bela Slova (Transparent)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 50%, #60A5FA 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #1E40AF;
+            margin-bottom: 12px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .preview-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .preview-card {
+            border: 2px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            background: #F8FAFC;
+        }
+
+        .preview-title {
+            color: #475569;
+            font-weight: 600;
+            margin-bottom: 16px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .canvas-preview {
+            background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 50%, #60A5FA 100%);
+            border-radius: 12px;
+            display: inline-block;
+            padding: 20px;
+        }
+
+        canvas {
+            border-radius: 8px;
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(30, 64, 175, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .instructions {
+            background: #EFF6FF;
+            border-left: 4px solid #3B82F6;
+            padding: 24px;
+            border-radius: 12px;
+            margin-top: 32px;
+        }
+
+        .instructions h3 {
+            color: #1E40AF;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .instructions ol {
+            color: #475569;
+            line-height: 1.8;
+            padding-left: 24px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .instructions code {
+            background: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #1E40AF;
+            font-size: 14px;
+        }
+
+        .feature-badge {
+            display: inline-block;
+            background: #10B981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 La Fantana Login Logo Generator <span class="feature-badge">Bela Slova</span></h1>
+        <p class="subtitle">Generator za logo sa belim slovima i transparentnom pozadinom</p>
+
+        <div class="preview-section">
+            <div class="preview-card">
+                <div class="preview-title">Login Screen Logo (256x256)</div>
+                <div class="canvas-preview">
+                    <canvas id="preview-login" width="160" height="160"></canvas>
+                </div>
+            </div>
+
+            <div class="preview-card">
+                <div class="preview-title">High Resolution (512x512)</div>
+                <div class="canvas-preview">
+                    <canvas id="preview-high" width="160" height="160"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button onclick="downloadLogo('login', 256)">📥 Preuzmi Login Logo (256x256)</button>
+            <button onclick="downloadLogo('high', 512)">📥 Preuzmi High-Res (512x512)</button>
+            <button onclick="downloadAll()">📦 Preuzmi Sve</button>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 Uputstvo za upotrebu:</h3>
+            <ol>
+                <li>Kliknite <strong>"Preuzmi Login Logo (256x256)"</strong> da preuzmete logo za login ekran</li>
+                <li>Sačuvajte fajl kao <code>logo-white.png</code></li>
+                <li>Kopirajte fajl u <code>/assets/</code> folder vaše aplikacije</li>
+                <li>Logo ima <strong>BELA SLOVA</strong> na <strong>TRANSPARENTNOJ POZADINI</strong></li>
+                <li>Perfektno za prikazivanje na plavom gradijent pozadini login ekrana</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function drawLogo(canvas, size) {
+            const ctx = canvas.getContext('2d');
+
+            // Clear canvas with transparency
+            ctx.clearRect(0, 0, size, size);
+
+            // No background - transparent
+
+            // Set text properties
+            ctx.fillStyle = '#FFFFFF'; // White text
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Draw "LA FANTANA" - larger and more prominent
+            const titleSize = size * 0.14; // Bigger font
+            ctx.font = `bold ${titleSize}px Arial, sans-serif`;
+            ctx.fillText('LA FANTANA', size / 2, size * 0.38);
+
+            // Draw "WHS" - medium size
+            const subtitleSize = size * 0.11;
+            ctx.font = `bold ${subtitleSize}px Arial, sans-serif`;
+            ctx.fillText('WHS', size / 2, size * 0.52);
+
+            // Draw "SERVISNI MODUL" - smaller, lighter
+            const taglineSize = size * 0.055;
+            ctx.font = `${taglineSize}px Arial, sans-serif`;
+            ctx.fillStyle = '#E5E7EB'; // Slightly off-white
+            ctx.fillText('SERVISNI MODUL', size / 2, size * 0.64);
+        }
+
+        // Draw preview logos
+        function updatePreviews() {
+            const loginCanvas = document.getElementById('preview-login');
+            const highCanvas = document.getElementById('preview-high');
+
+            drawLogo(loginCanvas, 160);
+            drawLogo(highCanvas, 160);
+        }
+
+        function downloadLogo(type, size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+
+            drawLogo(canvas, size);
+
+            const link = document.createElement('a');
+            link.download = `logo-white${type === 'high' ? '-highres' : ''}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadAll() {
+            // Download login logo
+            setTimeout(() => downloadLogo('login', 256), 100);
+
+            // Download high-res logo
+            setTimeout(() => downloadLogo('high', 512), 300);
+        }
+
+        // Initialize previews on load
+        updatePreviews();
+    </script>
+</body>
+</html>
