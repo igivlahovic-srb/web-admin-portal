@@ -27,6 +27,17 @@ const DEFAULT_USERS: User[] = [
     isActive: true,
     createdAt: new Date("2024-01-01"),
   },
+  {
+    id: "2",
+    charismaId: "IGIX001",
+    username: "Igix",
+    password: "Igix123",
+    name: "Igix",
+    role: "gospodar",
+    depot: "Central",
+    isActive: true,
+    createdAt: new Date("2024-01-01"),
+  },
 ];
 
 const DEFAULT_OPERATIONS: OperationTemplate[] = [
