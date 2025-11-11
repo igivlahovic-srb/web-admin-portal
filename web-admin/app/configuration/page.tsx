@@ -478,43 +478,6 @@ export default function ConfigurationPage() {
 
       {/* Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        {/* Sync Button */}
-        <div className="mb-6 flex items-center justify-end">
-          <button
-            onClick={async () => {
-              if (confirm("Da li želite da pošaljete konfiguraciju na sve mobilne uređaje?")) {
-                try {
-                  const response = await fetch("/api/config/sync", { method: "POST" });
-                  const data = await response.json();
-                  if (data.success) {
-                    alert("Konfiguracija uspešno poslata na sve mobilne uređaje!");
-                  } else {
-                    alert("Greška: " + data.message);
-                  }
-                } catch {
-                  alert("Greška prilikom slanja konfiguracije");
-                }
-              }
-            }}
-            className="flex items-center gap-2 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-colors shadow-sm"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-              />
-            </svg>
-            Pošalji na Mobilne Uređaje
-          </button>
-        </div>
-
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8">
             <button
@@ -613,6 +576,41 @@ export default function ConfigurationPage() {
               className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
             >
               Osveži
+            </button>
+            {/* Send to Mobile Devices - Only send current tab data */}
+            <button
+              onClick={async () => {
+                const itemType = activeTab === "operations" ? "operacije" : "rezervne delove";
+                if (confirm(`Da li želite da pošaljete ${itemType} na sve mobilne uređaje?`)) {
+                  try {
+                    const response = await fetch(`/api/config/sync?type=${activeTab}`, { method: "POST" });
+                    const data = await response.json();
+                    if (data.success) {
+                      alert(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} uspešno poslate na sve mobilne uređaje!`);
+                    } else {
+                      alert("Greška: " + data.message);
+                    }
+                  } catch {
+                    alert("Greška prilikom slanja konfiguracije");
+                  }
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold transition-colors shadow-sm"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                />
+              </svg>
+              Pošalji na Mobilne Uređaje
             </button>
           </div>
         )}

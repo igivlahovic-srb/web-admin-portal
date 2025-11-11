@@ -2,21 +2,35 @@ import { NextResponse } from "next/server";
 import { dataStore } from "../../../../lib/dataStore";
 
 /**
- * API endpoint za sinhronizaciju konfiguracijskih podataka na mobilne uređaje
- * GET /api/config/sync
+ * GET - Get configuration data for sync
+ * Query params: ?type=operations|spareParts (optional)
  */
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get("type");
+
     const operations = dataStore.getOperations();
     const spareParts = dataStore.getSpareParts();
 
+    let responseData: any = {
+      syncedAt: new Date().toISOString(),
+    };
+
+    // If type is specified, only return that type
+    if (type === "operations") {
+      responseData.operations = operations.filter((op) => op.isActive);
+    } else if (type === "spareParts") {
+      responseData.spareParts = spareParts.filter((sp) => sp.isActive);
+    } else {
+      // Return both if no type specified
+      responseData.operations = operations.filter((op) => op.isActive);
+      responseData.spareParts = spareParts.filter((sp) => sp.isActive);
+    }
+
     return NextResponse.json({
       success: true,
-      data: {
-        operations: operations.filter((op) => op.isActive),
-        spareParts: spareParts.filter((sp) => sp.isActive),
-        syncedAt: new Date().toISOString(),
-      },
+      data: responseData,
       message: "Konfiguracioni podaci spremni za sinhronizaciju",
     });
   } catch (error) {
@@ -29,16 +43,29 @@ export async function GET() {
 }
 
 /**
- * POST - Trigger push notification to all connected mobile devices
+ * POST - Trigger push notification to mobile devices
+ * Query params: ?type=operations|spareParts (optional)
  */
-export async function POST() {
+export async function POST(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get("type");
+
+    let message = "Signal za sinhronizaciju poslat na sve mobilne uređaje";
+
+    if (type === "operations") {
+      message = "Operacije poslate na sve mobilne uređaje";
+    } else if (type === "spareParts") {
+      message = "Rezervni delovi poslati na sve mobilne uređaje";
+    }
+
     // This endpoint would trigger a notification/refresh signal to mobile apps
     // In a real implementation, this would use push notifications or websockets
 
     return NextResponse.json({
       success: true,
-      message: "Signal za sinhronizaciju poslat na sve mobilne uređaje",
+      message,
+      type: type || "all",
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
