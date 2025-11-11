@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,12 +9,14 @@ import {
   ActivityIndicator,
   Keyboard,
   Image,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "../state/authStore";
 import * as Application from "expo-application";
+import * as Updates from "expo-updates";
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
@@ -22,10 +24,62 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkingUpdate, setCheckingUpdate] = useState(true);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
 
   const login = useAuthStore((s) => s.login);
 
+  // Check for updates on mount
+  useEffect(() => {
+    checkForUpdates();
+  }, []);
+
+  const checkForUpdates = async () => {
+    try {
+      setCheckingUpdate(true);
+
+      // Only check for updates in production builds
+      if (!__DEV__) {
+        const update = await Updates.checkForUpdateAsync();
+
+        if (update.isAvailable) {
+          setUpdateAvailable(true);
+
+          // Show alert to user
+          Alert.alert(
+            "Dostupno ažuriranje",
+            "Nova verzija aplikacije je dostupna. Aplikacija će se automatski ažurirati.",
+            [
+              {
+                text: "Ažuriraj sada",
+                onPress: async () => {
+                  try {
+                    await Updates.fetchUpdateAsync();
+                    await Updates.reloadAsync();
+                  } catch (e) {
+                    Alert.alert("Greška", "Nije moguće preuzeti ažuriranje. Pokušajte ponovo kasnije.");
+                    setUpdateAvailable(false);
+                  }
+                },
+              },
+            ],
+            { cancelable: false }
+          );
+        }
+      }
+    } catch (e) {
+      console.error("Error checking for updates:", e);
+    } finally {
+      setCheckingUpdate(false);
+    }
+  };
+
   const handleLogin = async () => {
+    // Don't allow login if update is checking or available
+    if (checkingUpdate || updateAvailable) {
+      return;
+    }
+
     if (!username.trim() || !password.trim()) {
       setError("Molimo unesite korisničko ime i lozinku");
       return;
@@ -73,6 +127,25 @@ export default function LoginScreen() {
                 <Text className="text-blue-100 text-base text-center font-medium">
                   Servisni Modul
                 </Text>
+
+                {/* Update checking indicator */}
+                {checkingUpdate && (
+                  <View className="mt-4 flex-row items-center bg-white/20 px-4 py-2 rounded-full">
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                    <Text className="text-white text-sm ml-2">
+                      Proveravam ažuriranja...
+                    </Text>
+                  </View>
+                )}
+
+                {updateAvailable && (
+                  <View className="mt-4 flex-row items-center bg-green-500 px-4 py-2 rounded-full">
+                    <Ionicons name="download-outline" size={16} color="#FFFFFF" />
+                    <Text className="text-white text-sm ml-2">
+                      Ažuriranje u toku...
+                    </Text>
+                  </View>
+                )}
               </View>
 
               {/* Login Form */}
@@ -150,11 +223,15 @@ export default function LoginScreen() {
                 {/* Login Button */}
                 <Pressable
                   onPress={handleLogin}
-                  disabled={loading}
+                  disabled={loading || checkingUpdate || updateAvailable}
                   className="active:opacity-80"
                 >
                   <LinearGradient
-                    colors={["#1E40AF", "#3B82F6"]}
+                    colors={
+                      checkingUpdate || updateAvailable
+                        ? ["#9CA3AF", "#6B7280"]
+                        : ["#1E40AF", "#3B82F6"]
+                    }
                     style={{
                       borderRadius: 12,
                       paddingVertical: 16,
@@ -163,6 +240,14 @@ export default function LoginScreen() {
                   >
                     {loading ? (
                       <ActivityIndicator color="#FFFFFF" />
+                    ) : checkingUpdate ? (
+                      <Text className="text-white text-base font-semibold">
+                        Proveravam ažuriranja...
+                      </Text>
+                    ) : updateAvailable ? (
+                      <Text className="text-white text-base font-semibold">
+                        Ažuriranje u toku...
+                      </Text>
                     ) : (
                       <Text className="text-white text-base font-semibold">
                         Prijavite se
