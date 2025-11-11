@@ -25,6 +25,10 @@ const menuItems: MenuItem[] = [
     label: "Konfiguracija",
     path: "/configuration",
   },
+  {
+    label: "Mobilna aplikacija",
+    path: "/mobile-app",
+  },
 ];
 
 export default function Navigation() {

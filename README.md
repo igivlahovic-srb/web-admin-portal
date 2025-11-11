@@ -282,6 +282,27 @@ Instalacioni script automatski instalira Node.js, Bun, sve pakete, pravi build, 
   - Upravljanje operacijama (dodavanje, izmena, deaktivacija)
   - Upravljanje rezervnim delovima (dodavanje, izmena, deaktivacija)
   - Sinhronizacija sa mobilnom aplikacijom (Web → Mobile only)
+- **📱 Mobilna aplikacija**:
+  - Prikaz trenutne verzije Android aplikacije
+  - Upload novih APK fajlova
+  - Download link za servisere da preuzmu aplikaciju
+  - Automatsko prepoznavanje verzije iz imena fajla
+  - Jednostavno ažuriranje aplikacije za sve servisere
+
+### Upravljanje Android aplikacijom
+
+Super administratori mogu uploadovati nove verzije Android aplikacije kroz web panel:
+
+1. Idite na tab **"Mobilna aplikacija"** u web admin panelu
+2. Kliknite na upload dugme i izaberite APK fajl
+3. Preporučeni format imena: `lafantana-v2.1.0.apk` (verzija će biti automatski detektovana)
+4. Nakon upload-a, serviseri mogu preuzeti novu verziju direktno sa web panela
+
+**Napomena za servisere:**
+- Android uređaji moraju dozvoliti instalaciju iz nepoznatih izvora
+- Nakon preuzimanja APK fajla, otvorite ga i pratite uputstva za instalaciju
+- Ako već imate instaliranu aplikaciju, nova verzija će je zameniti
+- Svi podaci ostaju sačuvani nakon ažuriranja
 
 Više informacija u `web-admin/README.md`
 
