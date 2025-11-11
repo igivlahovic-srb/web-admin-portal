@@ -68,6 +68,7 @@ export default function HistoryScreen() {
 
     return (
       <Pressable
+        key={ticket.id}
         onPress={() => {
           if (canOpen) {
             setCurrentTicket(ticket);
@@ -106,7 +107,7 @@ export default function HistoryScreen() {
               <View className="flex-row items-center gap-1 mt-1">
                 <Ionicons name="time-outline" size={14} color="#3B82F6" />
                 <Text className="text-blue-600 text-xs font-semibold">
-                  {`${ticket.durationMinutes} min`}
+                  {ticket.durationMinutes} min
                 </Text>
               </View>
             )}
@@ -159,7 +160,7 @@ export default function HistoryScreen() {
                   className="bg-gray-50 px-3 py-1 rounded-lg flex-row items-center gap-2"
                 >
                   <Text className="text-gray-900 text-sm font-medium">
-                    {`${part.quantity}x`}
+                    {part.quantity}x
                   </Text>
                   <Text className="text-gray-600 text-sm">{part.name}</Text>
                 </View>
@@ -195,7 +196,7 @@ export default function HistoryScreen() {
                 filter === "all" ? "text-white" : "text-gray-600"
               }`}
             >
-              {`Svi (${tickets.length})`}
+              Svi ({tickets.length})
             </Text>
           </Pressable>
           <Pressable
@@ -209,7 +210,7 @@ export default function HistoryScreen() {
                 filter === "in_progress" ? "text-white" : "text-gray-600"
               }`}
             >
-              {`U toku (${tickets.filter((t) => t.status === "in_progress").length})`}
+              U toku ({tickets.filter((t) => t.status === "in_progress").length})
             </Text>
           </Pressable>
           <Pressable
@@ -223,7 +224,7 @@ export default function HistoryScreen() {
                 filter === "completed" ? "text-white" : "text-gray-600"
               }`}
             >
-              {`Završeno (${tickets.filter((t) => t.status === "completed").length})`}
+              Završeno ({tickets.filter((t) => t.status === "completed").length})
             </Text>
           </Pressable>
         </View>
@@ -235,7 +236,7 @@ export default function HistoryScreen() {
           <View className="flex-row items-center gap-2">
             <Ionicons name="calendar-outline" size={20} color="#6B7280" />
             <Text className="text-gray-700 text-sm font-medium">
-              {`${format(dateFrom, "dd.MM.yyyy")} - ${format(dateTo, "dd.MM.yyyy")}`}
+              {format(dateFrom, "dd.MM.yyyy")} - {format(dateTo, "dd.MM.yyyy")}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
@@ -352,9 +353,7 @@ export default function HistoryScreen() {
             </Text>
           </View>
         ) : (
-          filteredTickets.map((ticket) => (
-            <View key={ticket.id}>{renderTicketCard(ticket)}</View>
-          ))
+          filteredTickets.map(renderTicketCard)
         )}
       </ScrollView>
     </View>
