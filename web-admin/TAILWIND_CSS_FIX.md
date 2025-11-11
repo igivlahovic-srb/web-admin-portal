@@ -40,8 +40,8 @@ cd /root/webadminportal/web-admin
 # Očistite stare fajlove
 rm -rf node_modules .next
 
-# Instalirajte SVE dependencies
-npm install
+# Instalirajte SVE dependencies (IMPORTANT: --include=dev flag!)
+npm install --include=dev
 
 # Build aplikaciju
 npm run build
@@ -50,12 +50,20 @@ npm run build
 pm2 restart lafantana-whs-admin
 ```
 
+**⚠️ VAŽNO:** Uvek koristite `npm install --include=dev` na production serveru kada build-ujete aplikaciju!
+
 ## Prevencija
 
 Da biste sprečili ovu grešku u budućnosti, uvek koristite:
 
 ```bash
-npm install  # bez --production flag-a
+npm install --include=dev  # Instalira SVE dependencies, uključujući devDependencies
+```
+
+**NE koristite:**
+
+```bash
+npm install --production  # ❌ Ovo preskače devDependencies!
 ```
 
 umesto:

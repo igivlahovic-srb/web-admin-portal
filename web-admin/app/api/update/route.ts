@@ -83,7 +83,9 @@ export async function POST() {
         console.log("Install result (bun):", installResult.stdout);
       } catch (bunError) {
         console.log("Bun not found, trying npm...");
-        installResult = await execAsync("npm install", {
+        // IMPORTANT: Use --include=dev to ensure devDependencies (like tailwindcss) are installed
+        // Even on production server, we need build-time dependencies
+        installResult = await execAsync("npm install --include=dev", {
           cwd: process.cwd(),
         });
         console.log("Install result (npm):", installResult.stdout);

@@ -20,7 +20,7 @@ echo "✓ .next cache removed"
 echo ""
 
 echo "Step 3/4: Installing ALL dependencies (including devDependencies)..."
-npm install
+npm install --include=dev
 echo "✓ Dependencies installed"
 echo ""
 
