@@ -104,8 +104,15 @@ export async function POST() {
         await execAsync("rm -rf .next", { cwd: process.cwd() });
         console.log("Cleaned .next cache");
       }
+
+      // Also clean node_modules/.cache to ensure fresh build
+      const nodeModulesCachePath = path.join(process.cwd(), "node_modules", ".cache");
+      if (fs.existsSync(nodeModulesCachePath)) {
+        await execAsync("rm -rf node_modules/.cache", { cwd: process.cwd() });
+        console.log("Cleaned node_modules/.cache");
+      }
     } catch (err) {
-      console.warn("Could not clean .next cache:", err);
+      console.warn("Could not clean cache:", err);
     }
 
     // Build the web-admin application
@@ -134,20 +141,36 @@ export async function POST() {
     // Restart the service
     console.log("Restarting service...");
     try {
-      // Try PM2 first
-      await execAsync("pm2 restart lafantana-whs-admin");
-      console.log("Service restarted with PM2");
-    } catch {
-      // Try systemd
+      // Kill all Next.js processes first to ensure clean restart
       try {
-        await execAsync("sudo systemctl restart lafantana-admin");
-        console.log("Service restarted with systemd");
-      } catch (sysError) {
-        console.warn("Could not restart service automatically:", sysError);
-        // Create flag file as fallback
-        const fs = require("fs");
-        fs.writeFileSync("/tmp/web-admin-restart-required", "1");
+        await execAsync("pkill -f 'next start' || true");
+        console.log("Killed existing Next.js processes");
+      } catch (killError) {
+        console.log("No existing processes to kill");
       }
+
+      // Wait a moment for processes to terminate
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Try PM2 first
+      try {
+        await execAsync("pm2 restart lafantana-whs-admin");
+        console.log("Service restarted with PM2");
+      } catch (pm2Error) {
+        // Try systemd
+        try {
+          await execAsync("sudo systemctl restart lafantana-admin");
+          console.log("Service restarted with systemd");
+        } catch (sysError) {
+          console.warn("Could not restart service automatically:", sysError);
+          // Create flag file as fallback
+          const fs = require("fs");
+          fs.writeFileSync("/tmp/web-admin-restart-required", "1");
+        }
+      }
+    } catch (restartError) {
+      console.error("Error during restart:", restartError);
+      // Don't fail the update if restart fails
     }
 
     console.log("Update completed successfully!");
