@@ -68,7 +68,6 @@ export default function HistoryScreen() {
 
     return (
       <Pressable
-        key={ticket.id}
         onPress={() => {
           if (canOpen) {
             setCurrentTicket(ticket);
@@ -96,7 +95,7 @@ export default function HistoryScreen() {
               </Text>
               {ticket.endTime && (
                 <>
-                  <Text className="text-gray-400 text-xs mx-1">{`-`}</Text>
+                  <Text className="text-gray-400 text-xs mx-1">-</Text>
                   <Text className="text-gray-500 text-xs">
                     {format(new Date(ticket.endTime), "HH:mm")}
                   </Text>
@@ -353,7 +352,9 @@ export default function HistoryScreen() {
             </Text>
           </View>
         ) : (
-          filteredTickets.map(renderTicketCard)
+          filteredTickets.map((ticket) => (
+            <View key={ticket.id}>{renderTicketCard(ticket)}</View>
+          ))
         )}
       </ScrollView>
     </View>
