@@ -95,6 +95,19 @@ export async function POST() {
       throw new Error("Instalacija dependencies nije uspela: " + (err as Error).message);
     }
 
+    // Clean .next cache before building
+    console.log("Cleaning .next cache...");
+    try {
+      const fs = require("fs");
+      const nextCachePath = path.join(process.cwd(), ".next");
+      if (fs.existsSync(nextCachePath)) {
+        await execAsync("rm -rf .next", { cwd: process.cwd() });
+        console.log("Cleaned .next cache");
+      }
+    } catch (err) {
+      console.warn("Could not clean .next cache:", err);
+    }
+
     // Build the web-admin application
     console.log("Building web-admin application...");
     try {
