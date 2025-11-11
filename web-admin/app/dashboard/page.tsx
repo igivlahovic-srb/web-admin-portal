@@ -141,17 +141,16 @@ export default function DashboardPage() {
 
             {/* Live Clock */}
             <div className="flex-1 flex justify-center">
-              <div className="relative bg-gradient-to-r from-indigo-500 to-purple-600 rounded-3xl px-8 py-4 text-white shadow-2xl">
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-3xl blur-xl opacity-50"></div>
-                <div className="relative text-center">
-                  <p className="text-2xl font-bold font-mono">
+              <div className="relative">
+                <div className="text-center">
+                  <p className="text-3xl font-bold text-blue-900">
                     {currentTime.toLocaleTimeString("sr-RS", {
                       hour: "2-digit",
                       minute: "2-digit",
                       second: "2-digit",
                     })}
                   </p>
-                  <p className="text-xs opacity-90 mt-1">
+                  <p className="text-sm text-blue-800 mt-1">
                     {currentTime.toLocaleDateString("sr-RS", {
                       weekday: "long",
                       day: "numeric",
