@@ -16,6 +16,7 @@ interface ServiceState {
   addSparePartToCurrentTicket: (sparePart: SparePart) => void;
   removeOperationFromCurrentTicket: (operationId: string) => void;
   removeSparePartFromCurrentTicket: (sparePartId: string) => void;
+  cleanupOldCompletedTickets: () => void;
   syncToWeb: () => Promise<boolean>;
 }
 
@@ -148,6 +149,37 @@ export const useServiceStore = create<ServiceState>()(
             ),
           };
         }),
+      cleanupOldCompletedTickets: () =>
+        set((state) => {
+          const threeDaysAgo = new Date();
+          threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+          threeDaysAgo.setHours(0, 0, 0, 0);
+
+          const originalCount = state.tickets.length;
+          const completedTickets = state.tickets.filter((t) => t.status === "completed");
+
+          const filteredTickets = state.tickets.filter((ticket) => {
+            if (ticket.status === "in_progress") {
+              return true;
+            }
+
+            if (ticket.status === "completed" && ticket.endTime) {
+              const ticketEndDate = new Date(ticket.endTime);
+              return ticketEndDate >= threeDaysAgo;
+            }
+
+            return true;
+          });
+
+          const deletedCount = originalCount - filteredTickets.length;
+
+          if (deletedCount > 0) {
+            console.log(`[ServiceStore] Cleanup: Deleted ${deletedCount} completed tickets older than 3 days`);
+            console.log(`[ServiceStore] Total completed tickets: ${completedTickets.length}, Kept: ${filteredTickets.filter((t) => t.status === "completed").length}`);
+          }
+
+          return { tickets: filteredTickets };
+        }),
       syncToWeb: async () => {
         try {
           const tickets = get().tickets;
@@ -156,6 +188,10 @@ export const useServiceStore = create<ServiceState>()(
 
           const result = await webAdminAPI.syncTickets(tickets);
           console.log("[ServiceStore] Sync result:", result);
+
+          if (result.success) {
+            get().cleanupOldCompletedTickets();
+          }
 
           return result.success;
         } catch (error) {
