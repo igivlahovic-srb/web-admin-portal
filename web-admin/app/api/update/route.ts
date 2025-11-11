@@ -64,11 +64,11 @@ export async function POST() {
 
     // Install dependencies in web-admin
     console.log("Installing dependencies for web-admin...");
-    await execAsync("bun install", { cwd: process.cwd() });
+    await execAsync("/usr/local/bin/bun install", { cwd: process.cwd() });
 
     // Build the web-admin application
     console.log("Building web-admin application...");
-    await execAsync("bun run build", { cwd: process.cwd() });
+    await execAsync("/usr/local/bin/bun run build", { cwd: process.cwd() });
 
     // Restart the service
     console.log("Restarting service...");
