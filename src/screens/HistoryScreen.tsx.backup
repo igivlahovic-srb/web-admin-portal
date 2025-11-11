@@ -20,11 +20,13 @@ export default function HistoryScreen() {
   const [filter, setFilter] = useState<"all" | "completed" | "in_progress">("all");
   const [showDateFilter, setShowDateFilter] = useState(false);
 
-  const isSuperUser = user?.role === "super_user" || user?.role === "gospodar";
+  const isSuperUser = user?.role === "super_user";
 
+  // Default to last 7 days
   const [dateFrom, setDateFrom] = useState(subDays(new Date(), 7));
   const [dateTo, setDateTo] = useState(new Date());
 
+  // Temporary string states for text input
   const [dateFromStr, setDateFromStr] = useState(format(dateFrom, "yyyy-MM-dd"));
   const [dateToStr, setDateToStr] = useState(format(dateTo, "yyyy-MM-dd"));
 
@@ -35,7 +37,7 @@ export default function HistoryScreen() {
       if (!isNaN(parsedFrom.getTime())) setDateFrom(parsedFrom);
       if (!isNaN(parsedTo.getTime())) setDateTo(parsedTo);
     } catch (error) {
-      // Invalid date format
+      // Invalid date format, keep current dates
     }
     setShowDateFilter(false);
   };
@@ -48,8 +50,10 @@ export default function HistoryScreen() {
   };
 
   const filteredTickets = tickets.filter((ticket) => {
+    // Status filter
     if (filter !== "all" && ticket.status !== filter) return false;
 
+    // Date filter
     const ticketDate = startOfDay(new Date(ticket.startTime));
     const fromDate = startOfDay(dateFrom);
     const toDate = endOfDay(dateTo);
@@ -90,7 +94,7 @@ export default function HistoryScreen() {
               </Text>
               {ticket.endTime && (
                 <>
-                  <Text className="text-gray-400 text-xs mx-1">{`-`}</Text>
+                  <Text className="text-gray-400 text-xs mx-1">-</Text>
                   <Text className="text-gray-500 text-xs">
                     {format(new Date(ticket.endTime), "HH:mm")}
                   </Text>
@@ -126,6 +130,7 @@ export default function HistoryScreen() {
           </View>
         </View>
 
+        {/* Operations */}
         {ticket.operations.length > 0 && (
           <View className="mb-3">
             <Text className="text-gray-700 text-xs font-semibold mb-2">
@@ -142,6 +147,7 @@ export default function HistoryScreen() {
           </View>
         )}
 
+        {/* Spare Parts */}
         {ticket.spareParts.length > 0 && (
           <View className="pt-3 border-t border-gray-100">
             <Text className="text-gray-700 text-xs font-semibold mb-2">
@@ -177,6 +183,7 @@ export default function HistoryScreen() {
 
   return (
     <View className="flex-1 bg-gray-50">
+      {/* Filter Tabs */}
       <View className="bg-white px-6 py-4 border-b border-gray-200">
         <View className="flex-row gap-2 mb-3">
           <Pressable
@@ -223,6 +230,7 @@ export default function HistoryScreen() {
           </Pressable>
         </View>
 
+        {/* Date Filter */}
         <Pressable
           onPress={() => setShowDateFilter(true)}
           className="flex-row items-center justify-between bg-gray-50 rounded-xl px-4 py-3"
@@ -237,6 +245,7 @@ export default function HistoryScreen() {
         </Pressable>
       </View>
 
+      {/* Date Filter Modal */}
       <Modal
         visible={showDateFilter}
         animationType="slide"
@@ -257,6 +266,7 @@ export default function HistoryScreen() {
           </View>
 
           <ScrollView className="flex-1 px-6 py-6">
+            {/* Date From */}
             <View className="mb-6">
               <Text className="text-gray-700 text-sm font-semibold mb-2">
                 Od datuma:
@@ -273,6 +283,7 @@ export default function HistoryScreen() {
               </View>
             </View>
 
+            {/* Date To */}
             <View className="mb-6">
               <Text className="text-gray-700 text-sm font-semibold mb-2">
                 Do datuma:
@@ -289,6 +300,7 @@ export default function HistoryScreen() {
               </View>
             </View>
 
+            {/* Quick Filters */}
             <View className="mb-6">
               <Text className="text-gray-700 text-sm font-semibold mb-3">
                 Brzi filteri:
@@ -321,6 +333,7 @@ export default function HistoryScreen() {
               </View>
             </View>
 
+            {/* Apply Button */}
             <Pressable
               onPress={applyDateFilter}
               className="bg-blue-600 rounded-xl py-4 items-center"
@@ -333,6 +346,7 @@ export default function HistoryScreen() {
         </SafeAreaView>
       </Modal>
 
+      {/* Tickets List */}
       <ScrollView className="flex-1 px-6 py-4">
         {filteredTickets.length === 0 ? (
           <View className="flex-1 items-center justify-center py-12">
