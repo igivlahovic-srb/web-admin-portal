@@ -174,6 +174,30 @@ src/
 - **TypeScript** - Type safety
 - **date-fns** - Formatiranje datuma
 
+### Razvoj i Testiranje
+
+Aplikacija je optimizovana za **iOS i Android** platforme.
+
+**Pokretanje:**
+```bash
+bun start
+```
+
+**Reload aplikacije:**
+- **iOS**: Shake device ili `Cmd + D` (simulator), zatim "Reload"
+- **Android**: Shake device ili `Cmd + M`, zatim "Reload"
+- **Metro bundler**: Pritisnite `r` za reload ili `shift+r` za reload sa clear cache
+
+**Ako iOS/Android ne prikazuje najnovije promene:**
+```bash
+# Očistite cache i restartujte
+bun start --clear
+# ili
+rm -rf .expo && bun start
+```
+
+Detaljnije informacije: `IOS_REFRESH_GUIDE.md`
+
 ## 👥 Korisnici (Demo)
 
 ### Super Administrator
