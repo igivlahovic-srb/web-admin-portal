@@ -122,7 +122,9 @@ export default function ServicesPage() {
                 <p className="text-sm font-semibold text-gray-900">
                   {user.name}
                 </p>
-                <p className="text-xs text-gray-500">Administrator</p>
+                <p className="text-xs text-gray-500">
+                  {user.role === "super_user" ? "Administrator" : user.role === "gospodar" ? "Gospodar" : "Korisnik"}
+                </p>
               </div>
               <button
                 onClick={handleLogout}
