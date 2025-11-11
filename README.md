@@ -2,6 +2,8 @@
 
 Profesionalna mobilna aplikacija za servisiranje i održavanje water aparata sa bocom od 19L.
 
+**Poslednje ažurirano**: 2025-01-XX (Verzija 2.1.0)
+
 ## 🎨 Ikone Aplikacije
 
 Aplikacija koristi La Fantana brending sa belim slovima na plavom gradijent pozadini.
@@ -20,6 +22,31 @@ Za generisanje novih ikona sa belim slovima:
    - **Plavi gradijent pozadinu** (#1E40AF → #3B82F6 → #60A5FA)
    - **Bela slova** "LA FANTANA WHS" sa "SERVISNI MODUL" podnaslovom
    - **Veća i čitljivija tipografija**
+5. Detaljnije uputstvo: `ICON_GENERATOR_INSTRUCTIONS.md`
+
+## 🔧 Nedavne Izmene (v2.1.0)
+
+### ✅ Ispravljene Greške
+- **Text Rendering Errors**: Ispravljeno svih 5 instanci "Text strings must be rendered within a <Text> component" greške
+  - `HistoryScreen.tsx`: Dodato `<Text>` wrapping za "x" i "min" literale (linije 163, 110)
+  - `DashboardScreen.tsx`: Dodato `<Text>` wrapping za "operacija" i "delova" (linije 301, 309)
+  - `ServiceTicketScreen.tsx`: Refaktorisano prikazivanje trajanja da koristi nested Text (linija 261)
+- **Ikone**: Ažurirane aplikacione ikone sa belim slovima na plavom gradijent pozadini
+- **LoginScreen**: Prikazan La Fantana logo umesto generičke ikone
+
+### 🆕 Nove Funkcionalnosti
+- **Icon Generator Tool**: HTML generator za kreiranje ikona sa custom tipografijom (`generate-icons.html`)
+- **Web Admin - Mobilna Aplikacija**: Novi tab u web admin panelu za upravljanje Android APK fajlovima
+  - Upload/download Android APK
+  - Verzionisanje aplikacije
+  - Link za manual download
+
+### 📚 Dokumentacija
+- `ICON_GENERATOR_INSTRUCTIONS.md`: Uputstvo za generisanje ikona
+- `IOS_REFRESH_GUIDE.md`: Troubleshooting za iOS cache probleme
+- `IOS_ANDROID_SYNC.md`: Objašnjenje React Native cross-platform garancije
+- `QUICK_REFERENCE.md`: Brza referenca za česte komande
+- `refresh-app.sh`: Skripta za čišćenje cache-a
 
 ## 📱 Opis
 

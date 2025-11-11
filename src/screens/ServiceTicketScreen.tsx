@@ -258,8 +258,9 @@ export default function ServiceTicketScreen() {
                       const duration = currentTicket.durationMinutes ||
                         Math.round((new Date(currentTicket.endTime).getTime() -
                           new Date(currentTicket.startTime).getTime()) / 60000);
-                      return `${duration} min`;
+                      return duration;
                     })()}
+                    <Text> min</Text>
                   </Text>
                 </View>
               </>

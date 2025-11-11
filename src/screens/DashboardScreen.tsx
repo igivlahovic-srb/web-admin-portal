@@ -298,7 +298,8 @@ export default function DashboardScreen() {
                         <View className="flex-row items-center gap-1">
                           <Ionicons name="build-outline" size={14} color="#6B7280" />
                           <Text className="text-gray-600 text-xs">
-                            {ticket.operations.length} operacija
+                            {ticket.operations.length}
+                            <Text> operacija</Text>
                           </Text>
                         </View>
                       )}
@@ -306,7 +307,8 @@ export default function DashboardScreen() {
                         <View className="flex-row items-center gap-1">
                           <Ionicons name="cube-outline" size={14} color="#6B7280" />
                           <Text className="text-gray-600 text-xs">
-                            {ticket.spareParts.length} delova
+                            {ticket.spareParts.length}
+                            <Text> delova</Text>
                           </Text>
                         </View>
                       )}
