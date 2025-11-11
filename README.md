@@ -39,6 +39,12 @@ Za generisanje novih ikona sa belim slovima:
 - **Ikone**: Ažurirane aplikacione ikone sa belim slovima na plavom gradijent pozadini
 
 ### 🆕 Nove Funkcionalnosti
+- **Bidirekciona Sinhronizacija**: Mobilna aplikacija sada preuzima i šalje servise sa/na web portal
+  - Servisi otvoreni na portalu se automatski prikazuju u mobilnoj app
+  - Inteligentno spajanje - koristi se najnovija verzija svakog servisa
+  - `syncFromWeb()` - Preuzimanje servisa sa portala
+  - `bidirectionalSync()` - Puna sinhronizacija (preuzimanje + slanje)
+  - Detalji: `BIDIRECTIONAL_SYNC_GUIDE.md`
 - **Icon Generator Tool**: HTML generator za kreiranje ikona sa custom tipografijom (`generate-icons.html`)
 - **Web Admin - Mobilna Aplikacija**: Novi tab u web admin panelu za upravljanje Android APK fajlovima
   - Upload/download Android APK
@@ -46,7 +52,9 @@ Za generisanje novih ikona sa belim slovima:
   - Link za manual download
 
 ### 📚 Dokumentacija
+- `BIDIRECTIONAL_SYNC_GUIDE.md`: Detaljno objašnjenje bidirekcione sinhronizacije
 - `ICON_GENERATOR_INSTRUCTIONS.md`: Uputstvo za generisanje ikona
+- `LOGIN_LOGO_GUIDE.md`: Uputstvo za login screen logo
 - `IOS_REFRESH_GUIDE.md`: Troubleshooting za iOS cache probleme
 - `IOS_ANDROID_SYNC.md`: Objašnjenje React Native cross-platform garancije
 - `QUICK_REFERENCE.md`: Brza referenca za česte komande

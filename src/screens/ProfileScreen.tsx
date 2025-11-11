@@ -26,7 +26,7 @@ export default function ProfileScreen() {
   const testConnection = useSyncStore((s) => s.testConnection);
 
   const syncUsersToWeb = useAuthStore((s) => s.syncToWeb);
-  const syncTicketsToWeb = useServiceStore((s) => s.syncToWeb);
+  const bidirectionalSyncTickets = useServiceStore((s) => s.bidirectionalSync);
 
   const isSuperUser = user?.role === "super_user";
 
@@ -99,8 +99,8 @@ export default function ProfileScreen() {
         }
       }
 
-      // Sync tickets
-      const ticketsSync = await syncTicketsToWeb();
+      // Sync tickets (bidirectional - fetch and push)
+      const ticketsSync = await bidirectionalSyncTickets();
       if (!ticketsSync) {
         Alert.alert("Greška", "Sinhronizacija servisa nije uspela");
         setSyncing(false);
@@ -111,8 +111,8 @@ export default function ProfileScreen() {
       setLastSyncTime(new Date());
       Alert.alert(
         "Uspeh",
-        `Svi podaci su uspešno sinhronizovani sa web panelom!\n\n` +
-        `Sinhronizovano servisa: ${tickets.length}`
+        "Svi podaci su uspešno sinhronizovani sa web panelom!\n\n" +
+        "Servisi su sinhronizovani u oba smera (preuzeto i poslato)"
       );
     } catch (error) {
       Alert.alert("Greška", "Došlo je do greške pri sinhronizaciji");

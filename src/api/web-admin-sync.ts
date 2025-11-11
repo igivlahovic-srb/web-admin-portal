@@ -186,6 +186,31 @@ class WebAdminAPI {
       };
     }
   }
+
+  // Fetch tickets from web admin panel
+  async fetchTickets(): Promise<SyncResponse> {
+    try {
+      const response = await fetch(`${this.apiUrl}/api/sync/tickets`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return { success: true, data };
+    } catch (error) {
+      console.error('Error fetching tickets:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
 }
 
 // Singleton instance

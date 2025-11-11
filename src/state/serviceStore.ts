@@ -18,6 +18,8 @@ interface ServiceState {
   removeSparePartFromCurrentTicket: (sparePartId: string) => void;
   cleanupOldCompletedTickets: () => void;
   syncToWeb: () => Promise<boolean>;
+  syncFromWeb: () => Promise<boolean>;
+  bidirectionalSync: () => Promise<boolean>;
 }
 
 export const useServiceStore = create<ServiceState>()(
@@ -196,6 +198,87 @@ export const useServiceStore = create<ServiceState>()(
           return result.success;
         } catch (error) {
           console.error("[ServiceStore] Failed to sync tickets to web:", error);
+          return false;
+        }
+      },
+      syncFromWeb: async () => {
+        try {
+          console.log("[ServiceStore] Fetching tickets from web...");
+          const result = await webAdminAPI.fetchTickets();
+
+          if (!result.success || !result.data) {
+            console.error("[ServiceStore] Failed to fetch tickets from web");
+            return false;
+          }
+
+          const webTickets = result.data.tickets || [];
+          console.log("[ServiceStore] Fetched tickets from web. Count:", webTickets.length);
+
+          // Merge web tickets with local tickets
+          const localTickets = get().tickets;
+          const mergedTickets = [...localTickets];
+
+          // Add or update tickets from web
+          webTickets.forEach((webTicket: ServiceTicket) => {
+            const localIndex = mergedTickets.findIndex(t => t.id === webTicket.id);
+
+            if (localIndex === -1) {
+              // New ticket from web - add it
+              console.log("[ServiceStore] Adding new ticket from web:", webTicket.id);
+              mergedTickets.push({
+                ...webTicket,
+                startTime: new Date(webTicket.startTime),
+                endTime: webTicket.endTime ? new Date(webTicket.endTime) : undefined,
+              });
+            } else {
+              // Ticket exists - merge using most recent update
+              const localTicket = mergedTickets[localIndex];
+              const webUpdated = webTicket.endTime ? new Date(webTicket.endTime) : new Date(webTicket.startTime);
+              const localUpdated = localTicket.endTime ? new Date(localTicket.endTime) : new Date(localTicket.startTime);
+
+              if (webUpdated > localUpdated) {
+                // Web version is newer - use it
+                console.log("[ServiceStore] Updating ticket from web (newer):", webTicket.id);
+                mergedTickets[localIndex] = {
+                  ...webTicket,
+                  startTime: new Date(webTicket.startTime),
+                  endTime: webTicket.endTime ? new Date(webTicket.endTime) : undefined,
+                };
+              }
+            }
+          });
+
+          set({ tickets: mergedTickets });
+          console.log("[ServiceStore] Merged tickets. Total count:", mergedTickets.length);
+
+          return true;
+        } catch (error) {
+          console.error("[ServiceStore] Failed to sync from web:", error);
+          return false;
+        }
+      },
+      bidirectionalSync: async () => {
+        try {
+          console.log("[ServiceStore] Starting bidirectional sync...");
+
+          // Step 1: Fetch from web first (to get reopened tickets)
+          const fetchSuccess = await get().syncFromWeb();
+          if (!fetchSuccess) {
+            console.error("[ServiceStore] Failed to fetch from web");
+            return false;
+          }
+
+          // Step 2: Push local changes to web
+          const pushSuccess = await get().syncToWeb();
+          if (!pushSuccess) {
+            console.error("[ServiceStore] Failed to push to web");
+            return false;
+          }
+
+          console.log("[ServiceStore] Bidirectional sync completed successfully");
+          return true;
+        } catch (error) {
+          console.error("[ServiceStore] Bidirectional sync failed:", error);
           return false;
         }
       },
