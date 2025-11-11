@@ -122,22 +122,45 @@ export default function LoginScreen() {
             className="flex-1"
           >
             <View className="flex-1 justify-center px-6">
-              {/* Logo/Title Section */}
+              {/* Logo/Title Section - Identical to Portal */}
               <View className="items-center mb-12">
-                {/* La Fantana Logo */}
-                <Image
-                  source={require("../../assets/icon.png")}
-                  style={{ width: 120, height: 120, marginBottom: 16 }}
-                  resizeMode="contain"
-                />
-                <Text className="text-white text-5xl font-extrabold tracking-tight mb-2">
-                  LA FANTANA
+                {/* La Fantana Logo - Blue gradient square matching portal */}
+                <View style={{
+                  width: 160,
+                  height: 160,
+                  borderRadius: 16,
+                  marginBottom: 24,
+                  overflow: "hidden",
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 8,
+                }}>
+                  <LinearGradient
+                    colors={["#2563eb", "#4f46e5"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      padding: 24,
+                    }}
+                  >
+                    <Image
+                      source={require("../../assets/logo.png")}
+                      style={{ width: "100%", height: "100%" }}
+                      resizeMode="contain"
+                    />
+                  </LinearGradient>
+                </View>
+                <Text className="text-white text-3xl font-bold mb-2">
+                  La Fantana WHS
                 </Text>
-                <Text className="text-white text-4xl font-bold mb-3">
-                  WHS
-                </Text>
-                <Text className="text-blue-100 text-lg text-center font-medium">
-                  Servisni Modul
+                <Text className="text-blue-100 text-base text-center font-medium">
+                  Admin Panel
                 </Text>
 
                 {/* Update checking indicator */}
