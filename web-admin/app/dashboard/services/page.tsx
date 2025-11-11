@@ -12,6 +12,12 @@ export default function ServicesPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "in_progress" | "completed">("all");
   const [selectedTicket, setSelectedTicket] = useState<ServiceTicket | null>(null);
+  const [filters, setFilters] = useState({
+    serviceNumber: "",
+    deviceCode: "",
+    technician: "",
+    status: "",
+  });
   const router = useRouter();
 
   useEffect(() => {
@@ -86,8 +92,16 @@ export default function ServicesPage() {
   }
 
   const filteredTickets = tickets.filter((t) => {
-    if (filter === "in_progress") return t.status === "in_progress";
-    if (filter === "completed") return t.status === "completed";
+    // Status filter from buttons
+    if (filter === "in_progress" && t.status !== "in_progress") return false;
+    if (filter === "completed" && t.status !== "completed") return false;
+
+    // Column filters
+    if (filters.serviceNumber && !t.serviceNumber.toLowerCase().includes(filters.serviceNumber.toLowerCase())) return false;
+    if (filters.deviceCode && !t.deviceCode.toLowerCase().includes(filters.deviceCode.toLowerCase())) return false;
+    if (filters.technician && !t.technicianName.toLowerCase().includes(filters.technician.toLowerCase())) return false;
+    if (filters.status && t.status !== filters.status) return false;
+
     return true;
   });
 
@@ -232,6 +246,51 @@ export default function ServicesPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
+              {/* Filters */}
+              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <div className="text-sm text-gray-600 mb-3">Filtriranje</div>
+                <div className="grid grid-cols-4 gap-3">
+                  <input
+                    type="text"
+                    placeholder="Servis No."
+                    value={filters.serviceNumber}
+                    onChange={(e) => setFilters({ ...filters, serviceNumber: e.target.value })}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Šifra aparata"
+                    value={filters.deviceCode}
+                    onChange={(e) => setFilters({ ...filters, deviceCode: e.target.value })}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Serviser"
+                    value={filters.technician}
+                    onChange={(e) => setFilters({ ...filters, technician: e.target.value })}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <select
+                    value={filters.status}
+                    onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Svi statusi</option>
+                    <option value="in_progress">U toku</option>
+                    <option value="completed">Završeno</option>
+                  </select>
+                </div>
+                {(filters.serviceNumber || filters.deviceCode || filters.technician || filters.status) && (
+                  <button
+                    onClick={() => setFilters({ serviceNumber: "", deviceCode: "", technician: "", status: "" })}
+                    className="mt-3 text-sm text-blue-600 hover:text-blue-700"
+                  >
+                    ✕ Resetuj filtere
+                  </button>
+                )}
+              </div>
+
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-200 bg-gray-50">
