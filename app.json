@@ -16,7 +16,8 @@
     "updates": {
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/279e80a2-142c-4af9-9270-daaa9e5c6763"
     },
     "runtimeVersion": {
       "policy": "appVersion"
@@ -35,6 +36,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "279e80a2-142c-4af9-9270-daaa9e5c6763"
+      }
+    },
+    "owner": "igix"
   }
 }
