@@ -466,11 +466,11 @@ export default function ConfigurationPage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center p-2 shadow-md">
                 <img
-                  src="/logo.png"
+                  src="/lafantana-logo.svg"
                   alt="La Fantana WHS Logo"
-                  className="w-12 h-12"
+                  className="w-full h-full object-contain"
                 />
               </div>
               <div>

@@ -48,11 +48,11 @@ export default function LoginPage() {
       <div className="max-w-md w-full">
         {/* Logo/Header Section */}
         <div className="text-center mb-8">
-          <div className="inline-block mb-4">
+          <div className="inline-block mb-4 w-32 h-32 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center p-4 shadow-lg">
             <img
-              src="/logo.png"
+              src="/lafantana-logo.svg"
               alt="La Fantana WHS Logo"
-              className="w-24 h-24 mx-auto"
+              className="w-full h-full object-contain"
             />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
