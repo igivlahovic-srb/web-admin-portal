@@ -37,6 +37,7 @@ export default function SettingsScreen() {
   const [urlInput, setUrlInput] = useState(apiUrl);
   const [testing, setTesting] = useState(false);
   const [refreshingConfig, setRefreshingConfig] = useState(false);
+  const [creatingBackup, setCreatingBackup] = useState(false);
 
   const handleSaveUrl = () => {
     if (!urlInput.trim()) {
