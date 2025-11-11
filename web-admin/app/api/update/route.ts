@@ -20,8 +20,9 @@ export async function POST() {
         'git remote add vibecode https://019a6624-8c70-7588-b2d9-2c35197b6d10:notrequired@git.vibecodeapp.com/019a6624-8c70-7588-b2d9-2c35197b6d10.git',
         { cwd: rootDir }
       );
-    } catch {
+    } catch (err) {
       // Remote already exists, that's fine
+      console.log("Git remote already exists or error adding:", (err as Error).message);
     }
 
     // Pull latest changes from Vibecode git
@@ -44,12 +45,19 @@ export async function POST() {
     try {
       await execAsync("git reset --hard", { cwd: rootDir });
       console.log("Reset local changes");
-    } catch {
+    } catch (err) {
       // If reset fails, continue anyway
+      console.log("Reset failed or not needed:", (err as Error).message);
     }
 
     // Pull from vibecode
-    await execAsync("git pull vibecode main", { cwd: rootDir });
+    try {
+      const pullResult = await execAsync("git pull vibecode main", { cwd: rootDir });
+      console.log("Git pull result:", pullResult.stdout);
+    } catch (err) {
+      console.error("Git pull error:", (err as Error).message);
+      // Continue anyway - might already be up to date
+    }
 
     // Restore .env.local backup
     if (envBackup) {
@@ -64,11 +72,29 @@ export async function POST() {
 
     // Install dependencies in web-admin
     console.log("Installing dependencies for web-admin...");
-    await execAsync("/usr/local/bin/bun install", { cwd: process.cwd() });
+    try {
+      const installResult = await execAsync("/usr/local/bin/bun install", {
+        cwd: process.cwd(),
+        env: { ...process.env, PATH: "/usr/local/bin:/usr/bin:/bin" }
+      });
+      console.log("Install result:", installResult.stdout);
+    } catch (err) {
+      console.error("Install error:", (err as any).stderr || (err as Error).message);
+      throw new Error("Instalacija dependencies nije uspela: " + (err as Error).message);
+    }
 
     // Build the web-admin application
     console.log("Building web-admin application...");
-    await execAsync("/usr/local/bin/bun run build", { cwd: process.cwd() });
+    try {
+      const buildResult = await execAsync("/usr/local/bin/bun run build", {
+        cwd: process.cwd(),
+        env: { ...process.env, PATH: "/usr/local/bin:/usr/bin:/bin" }
+      });
+      console.log("Build completed successfully");
+    } catch (err) {
+      console.error("Build error:", (err as any).stderr || (err as Error).message);
+      throw new Error("Build nije uspeo: " + (err as Error).message);
+    }
 
     // Restart the service
     console.log("Restarting service...");
