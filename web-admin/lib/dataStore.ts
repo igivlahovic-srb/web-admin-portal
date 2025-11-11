@@ -172,3 +172,5 @@ export const dataStore = {
     return null;
   },
 };
+
+export default dataStore;
