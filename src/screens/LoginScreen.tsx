@@ -16,7 +16,14 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "../state/authStore";
 import * as Application from "expo-application";
-import * as Updates from "expo-updates";
+
+// Conditionally import expo-updates only if available
+let Updates: any = null;
+try {
+  Updates = require("expo-updates");
+} catch (e) {
+  console.log("expo-updates not available in development mode");
+}
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
@@ -24,7 +31,7 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [checkingUpdate, setCheckingUpdate] = useState(true);
+  const [checkingUpdate, setCheckingUpdate] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(false);
 
   const login = useAuthStore((s) => s.login);
@@ -35,37 +42,40 @@ export default function LoginScreen() {
   }, []);
 
   const checkForUpdates = async () => {
+    // Only check for updates if expo-updates is available and we're not in dev mode
+    if (!Updates || __DEV__) {
+      console.log("Skipping update check in development mode");
+      return;
+    }
+
     try {
       setCheckingUpdate(true);
 
-      // Only check for updates in production builds
-      if (!__DEV__) {
-        const update = await Updates.checkForUpdateAsync();
+      const update = await Updates.checkForUpdateAsync();
 
-        if (update.isAvailable) {
-          setUpdateAvailable(true);
+      if (update.isAvailable) {
+        setUpdateAvailable(true);
 
-          // Show alert to user
-          Alert.alert(
-            "Dostupno ažuriranje",
-            "Nova verzija aplikacije je dostupna. Aplikacija će se automatski ažurirati.",
-            [
-              {
-                text: "Ažuriraj sada",
-                onPress: async () => {
-                  try {
-                    await Updates.fetchUpdateAsync();
-                    await Updates.reloadAsync();
-                  } catch (e) {
-                    Alert.alert("Greška", "Nije moguće preuzeti ažuriranje. Pokušajte ponovo kasnije.");
-                    setUpdateAvailable(false);
-                  }
-                },
+        // Show alert to user
+        Alert.alert(
+          "Dostupno ažuriranje",
+          "Nova verzija aplikacije je dostupna. Aplikacija će se automatski ažurirati.",
+          [
+            {
+              text: "Ažuriraj sada",
+              onPress: async () => {
+                try {
+                  await Updates.fetchUpdateAsync();
+                  await Updates.reloadAsync();
+                } catch (e) {
+                  Alert.alert("Greška", "Nije moguće preuzeti ažuriranje. Pokušajte ponovo kasnije.");
+                  setUpdateAvailable(false);
+                }
               },
-            ],
-            { cancelable: false }
-          );
-        }
+            },
+          ],
+          { cancelable: false }
+        );
       }
     } catch (e) {
       console.error("Error checking for updates:", e);
