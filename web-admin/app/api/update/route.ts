@@ -73,11 +73,21 @@ export async function POST() {
     // Install dependencies in web-admin
     console.log("Installing dependencies for web-admin...");
     try {
-      const installResult = await execAsync("/usr/local/bin/bun install", {
-        cwd: process.cwd(),
-        env: { ...process.env, PATH: "/usr/local/bin:/usr/bin:/bin" }
-      });
-      console.log("Install result:", installResult.stdout);
+      // Try bun first, fallback to npm
+      let installResult;
+      try {
+        installResult = await execAsync("/usr/local/bin/bun install", {
+          cwd: process.cwd(),
+          env: { ...process.env, PATH: "/usr/local/bin:/usr/bin:/bin" }
+        });
+        console.log("Install result (bun):", installResult.stdout);
+      } catch (bunError) {
+        console.log("Bun not found, trying npm...");
+        installResult = await execAsync("npm install", {
+          cwd: process.cwd(),
+        });
+        console.log("Install result (npm):", installResult.stdout);
+      }
     } catch (err) {
       console.error("Install error:", (err as any).stderr || (err as Error).message);
       throw new Error("Instalacija dependencies nije uspela: " + (err as Error).message);
@@ -86,11 +96,21 @@ export async function POST() {
     // Build the web-admin application
     console.log("Building web-admin application...");
     try {
-      const buildResult = await execAsync("/usr/local/bin/bun run build", {
-        cwd: process.cwd(),
-        env: { ...process.env, PATH: "/usr/local/bin:/usr/bin:/bin" }
-      });
-      console.log("Build completed successfully");
+      // Try bun first, fallback to npm
+      let buildResult;
+      try {
+        buildResult = await execAsync("/usr/local/bin/bun run build", {
+          cwd: process.cwd(),
+          env: { ...process.env, PATH: "/usr/local/bin:/usr/bin:/bin" }
+        });
+        console.log("Build completed successfully (bun)");
+      } catch (bunError) {
+        console.log("Bun not found, trying npm...");
+        buildResult = await execAsync("npm run build", {
+          cwd: process.cwd(),
+        });
+        console.log("Build completed successfully (npm)");
+      }
     } catch (err) {
       console.error("Build error:", (err as any).stderr || (err as Error).message);
       throw new Error("Build nije uspeo: " + (err as Error).message);
