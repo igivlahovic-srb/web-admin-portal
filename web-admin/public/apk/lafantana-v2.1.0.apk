@@ -1,5 +1,0 @@
-This is a dummy APK file for testing purposes.
-In production, this would be a real Android APK built with EAS Build.
-Version: 2.1.0
-Build Date: $(date)
-File size: Approximately 50MB in real build
