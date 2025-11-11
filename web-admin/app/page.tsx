@@ -44,24 +44,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        {/* Logo/Header Section */}
-        <div className="text-center mb-8">
-          <div className="inline-block mb-4 w-32 h-32 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center p-4 shadow-lg">
-            <img
-              src="/lafantana-logo.svg"
-              alt="La Fantana WHS Logo"
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            La Fantana WHS
-          </h1>
-          <p className="text-gray-600">Admin Panel</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex flex-col items-center justify-center p-4">
+      {/* Logo/Header Section - Centered */}
+      <div className="text-center mb-8">
+        <div className="w-40 h-40 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center p-6 shadow-lg mx-auto mb-6">
+          <img
+            src="/lafantana-logo.svg"
+            alt="La Fantana WHS Logo"
+            className="w-full h-full object-contain"
+          />
         </div>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          La Fantana WHS
+        </h1>
+        <p className="text-gray-600">Admin Panel</p>
+      </div>
 
-        {/* Login Card */}
+      {/* Login Card */}
+      <div className="max-w-md w-full">
         <div className="bg-white rounded-3xl shadow-xl p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
             Prijava
