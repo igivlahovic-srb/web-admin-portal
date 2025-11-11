@@ -1,5 +1,21 @@
 // Auto-update service for checking new APK versions
-// Place in: src/services/auto-update.ts
+//
+// HOW IT WORKS:
+// - Checks web portal API for new APK versions on app startup
+// - Only works with production APK builds (not in Expo Go development)
+// - Shows dialog to user if newer version is available
+// - In development mode, silently skips check (normal behavior)
+//
+// SETUP:
+// 1. Change WEB_PORTAL_URL below to your actual server IP/domain
+// 2. Build production APK: ./BUILD_ANDROID_APK.sh
+// 3. Install APK on device
+// 4. Auto-update will check on every app launch
+//
+// DEVELOPMENT:
+// - Network errors are NORMAL in development (Expo Go cannot reach server)
+// - These are logged as warnings, not errors
+// - Auto-update is automatically disabled in __DEV__ mode
 
 import { Alert, Linking } from 'react-native';
 import * as Application from 'expo-application';
@@ -21,13 +37,19 @@ export async function checkForUpdates(): Promise<VersionInfo> {
   try {
     const currentVersion = Application.nativeApplicationVersion || '1.0.0';
 
-    // Fetch latest version from web portal
+    // Fetch latest version from web portal with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
     const response = await fetch(`${WEB_PORTAL_URL}/api/mobile-app`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
@@ -52,7 +74,12 @@ export async function checkForUpdates(): Promise<VersionInfo> {
       needsUpdate,
     };
   } catch (error) {
-    console.error('[AutoUpdate] Failed to check for updates:', error);
+    // Silent fail - this is expected in development or when server is unreachable
+    // Only log as warning, not error
+    if (__DEV__) {
+      console.warn('[AutoUpdate] Cannot check for updates (server not reachable):', error instanceof Error ? error.message : 'Unknown error');
+      console.warn('[AutoUpdate] This is normal in development. Auto-update only works with production APK.');
+    }
 
     // Return current version info even if check fails
     return {
@@ -129,6 +156,12 @@ export function showUpdateDialog(versionInfo: VersionInfo): void {
  */
 export async function checkForUpdatesOnStart(): Promise<void> {
   try {
+    // Only check for updates in production (not in Expo Go development)
+    if (__DEV__) {
+      console.log('[AutoUpdate] Skipping update check in development mode');
+      return;
+    }
+
     console.log('[AutoUpdate] Checking for updates...');
     const versionInfo = await checkForUpdates();
 
@@ -145,8 +178,10 @@ export async function checkForUpdatesOnStart(): Promise<void> {
       }, 3000);
     }
   } catch (error) {
-    console.error('[AutoUpdate] Error checking for updates:', error);
     // Silent fail - don't bother user if update check fails
+    if (__DEV__) {
+      console.warn('[AutoUpdate] Update check failed (this is normal in development)');
+    }
   }
 }
 

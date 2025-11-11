@@ -65,6 +65,7 @@ Za generisanje novih ikona sa belim slovima:
 
 ### 📚 Dokumentacija
 - `AUTO_BUILD_GUIDE.md`: **NOVO!** Kompletan guide za automatski build sistem
+- `AUTO_UPDATE_ERROR_FIX.md`: **NOVO!** Objašnjenje network error-a u development mode-u
 - `ANDROID_BUILD_GUIDE.md`: Manualni Android APK build guide
 - `QUICK_START_DOWNLOAD_LINKS.md`: Quick reference za prikaz download linkova
 - `BIDIRECTIONAL_SYNC_GUIDE.md`: Detaljno objašnjenje bidirekcione sinhronizacije
