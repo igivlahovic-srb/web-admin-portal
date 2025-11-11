@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { OperationTemplate, SparePartTemplate, User } from "../../types";
 import Navigation from "../../components/Navigation";
 
-export default function ConfigurationPage() {
+function ConfigurationContent() {
   const searchParams = useSearchParams();
   const [operations, setOperations] = useState<OperationTemplate[]>([]);
   const [spareParts, setSpareParts] = useState<SparePartTemplate[]>([]);
@@ -1687,6 +1687,14 @@ function UbuntuSystemTab() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ConfigurationPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-gray-600">Učitavanje...</div></div>}>
+      <ConfigurationContent />
+    </Suspense>
   );
 }
 
