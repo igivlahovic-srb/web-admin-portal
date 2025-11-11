@@ -267,7 +267,7 @@ class WebAdminAPI {
   // Get available backups from web admin
   async getBackups(): Promise<SyncResponse> {
     try {
-      const response = await fetch(`${this.apiUrl}/api/backup/list`, {
+      const response = await fetch(`${this.apiUrl}/api/backup`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -292,7 +292,7 @@ class WebAdminAPI {
   // Create new backup
   async createBackup(): Promise<SyncResponse> {
     try {
-      const response = await fetch(`${this.apiUrl}/api/backup/create`, {
+      const response = await fetch(`${this.apiUrl}/api/backup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -314,30 +314,13 @@ class WebAdminAPI {
     }
   }
 
-  // Restore from backup
+  // Restore from backup - NOTE: This functionality is only available via Ubuntu server CLI
+  // Restore process requires manual steps on the server (see BACKUP_SYSTEM_GUIDE.md)
   async restoreBackup(backupFilename: string): Promise<SyncResponse> {
-    try {
-      const response = await fetch(`${this.apiUrl}/api/backup/restore`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ filename: backupFilename }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return { success: true, data };
-    } catch (error) {
-      console.error('Error restoring backup:', error);
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Unknown error',
-      };
-    }
+    return {
+      success: false,
+      message: 'Restore mora biti izvršen na Ubuntu serveru. Vidite BACKUP_SYSTEM_GUIDE.md za uputstva.',
+    };
   }
 
   // Fetch all data from web admin (for live updates)
