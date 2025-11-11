@@ -3,6 +3,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import RootNavigator from "./src/navigation/RootNavigator";
+import { useEffect } from "react";
+import { checkForUpdatesOnStart } from "./src/services/auto-update";
 
 /*
 IMPORTANT NOTICE: DO NOT REMOVE
@@ -25,8 +27,13 @@ const openai_api_key = Constants.expoConfig.extra.apikey;
 
 */
 
-// La Fantana WHS v2.1.0 - Bidirectional Sync + Login Screen Logo Fix
+// La Fantana WHS v2.1.0 - Bidirectional Sync + Login Screen Logo Fix + Auto-Update
 export default function App() {
+  useEffect(() => {
+    // Check for updates on app start
+    checkForUpdatesOnStart();
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

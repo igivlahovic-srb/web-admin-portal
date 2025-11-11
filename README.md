@@ -45,13 +45,23 @@ Za generisanje novih ikona sa belim slovima:
   - `syncFromWeb()` - Preuzimanje servisa sa portala
   - `bidirectionalSync()` - Puna sinhronizacija (preuzimanje + slanje)
   - Detalji: `BIDIRECTIONAL_SYNC_GUIDE.md`
+- **Android APK Build i Auto-Update Sistem** 🚀
+  - Potpuno automatizovan build system na Ubuntu serveru
+  - Build script (`BUILD_ANDROID_APK.sh`) za kreiranje APK fajlova
+  - Automatski upload APK na web portal
+  - Auto-update provera pri pokretanju aplikacije
+  - Notifikacija korisnicima kada je dostupna nova verzija
+  - Download link direktno iz aplikacije
+  - Detalji: `ANDROID_BUILD_GUIDE.md`
 - **Icon Generator Tool**: HTML generator za kreiranje ikona sa custom tipografijom (`generate-icons.html`)
 - **Web Admin - Mobilna Aplikacija**: Novi tab u web admin panelu za upravljanje Android APK fajlovima
   - Upload/download Android APK
   - Verzionisanje aplikacije
   - Link za manual download
+  - Prikaz trenutne verzije i veličine APK fajla
 
 ### 📚 Dokumentacija
+- `ANDROID_BUILD_GUIDE.md`: Kompletan vodič za Android APK build i auto-update sistem
 - `BIDIRECTIONAL_SYNC_GUIDE.md`: Detaljno objašnjenje bidirekcione sinhronizacije
 - `ICON_GENERATOR_INSTRUCTIONS.md`: Uputstvo za generisanje ikona
 - `LOGIN_LOGO_GUIDE.md`: Uputstvo za login screen logo
@@ -59,6 +69,7 @@ Za generisanje novih ikona sa belim slovima:
 - `IOS_ANDROID_SYNC.md`: Objašnjenje React Native cross-platform garancije
 - `QUICK_REFERENCE.md`: Brza referenca za česte komande
 - `refresh-app.sh`: Skripta za čišćenje cache-a
+- `BUILD_ANDROID_APK.sh`: Build script za kreiranje Android APK
 
 ## 📱 Opis
 
@@ -373,7 +384,42 @@ Instalacioni script automatski instalira Node.js, Bun, sve pakete, pravi build, 
 
 ### Upravljanje Android aplikacijom
 
-Super administratori mogu uploadovati nove verzije Android aplikacije kroz web panel:
+**🚀 Automatski Build Sistem (v2.1.0):**
+
+Super administratori mogu buildovati i uploadovati nove verzije Android aplikacije direktno na Ubuntu serveru:
+
+#### Build APK na serveru:
+```bash
+cd ~/webadminportal
+./BUILD_ANDROID_APK.sh
+```
+
+Build script automatski:
+1. Čita verziju iz `app.json` (npr. 2.1.0)
+2. Build-uje Android APK sa EAS Build
+3. Kopira APK u `web-admin/public/apk/lafantana-vX.X.X.apk`
+4. Postavlja permissions za download
+5. **Automatski briše stare verzije** da ostaje samo najnovija
+
+**Za detaljno uputstvo za build:** `ANDROID_BUILD_GUIDE.md`
+
+#### Auto-Update sistem:
+
+**Mobilna aplikacija automatski:**
+- ✅ Proverava za nove verzije pri pokretanju
+- ✅ Poredi trenutnu verziju sa verzijom na portalu
+- ✅ Prikazuje dialog ako postoji novija verzija
+- ✅ Otvara download link kada korisnik klikne "Preuzmi"
+
+**Serviseri:**
+1. Otvaraju aplikaciju → automatski dobijaju notifikaciju ako ima nova verzija
+2. Kliknu "Preuzmi" → download počinje
+3. Instaliraju APK → stara verzija se automatski zamenjuje
+4. Svi podaci ostaju sačuvani
+
+#### Manuelni upload (opciono):
+
+Super administratori mogu i manualno uploadovati APK kroz web panel:
 
 1. Idite na tab **"Mobilna aplikacija"** u web admin panelu
 2. Kliknite na upload dugme i izaberite APK fajl
