@@ -13,6 +13,9 @@ export interface User {
   lastLoginAt?: Date | string; // Poslednje vreme logovanja
   lastLoginDevice?: string; // Informacije o uređaju (npr. "iPhone 13, iOS 16.2")
   isOnline?: boolean; // Da li je trenutno online
+  twoFactorEnabled?: boolean; // Da li je 2FA omogućen
+  twoFactorSecret?: string; // TOTP secret (enkriptovan)
+  backupCodes?: string[]; // Backup kodovi za 2FA (hašovani)
 }
 
 export interface SparePart {
