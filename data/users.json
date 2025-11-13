@@ -1,34 +1,46 @@
-{
-  "users": [
-    {
-      "id": "1",
-      "username": "admin",
-      "password": "admin123",
-      "firstName": "Administrator",
-      "lastName": "",
-      "role": "super_user",
-      "isActive": true,
-      "createdAt": "2025-01-01T00:00:00.000Z"
-    },
-    {
-      "id": "2",
-      "username": "marko",
-      "password": "marko123",
-      "firstName": "Marko",
-      "lastName": "Marković",
-      "role": "serviser",
-      "isActive": true,
-      "createdAt": "2025-01-01T00:00:00.000Z"
-    },
-    {
-      "id": "3",
-      "username": "jovan",
-      "password": "jovan123",
-      "firstName": "Jovan",
-      "lastName": "Jovanović",
-      "role": "serviser",
-      "isActive": true,
-      "createdAt": "2025-01-01T00:00:00.000Z"
-    }
-  ]
-}
+[
+  {
+    "id": "1",
+    "charismaId": "ADMIN001",
+    "username": "admin",
+    "password": "admin123",
+    "name": "Administrator",
+    "role": "super_user",
+    "depot": "Central",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "2",
+    "charismaId": "IGOR001",
+    "username": "Igor",
+    "password": "Igor123",
+    "name": "Igor Administrator",
+    "role": "gospodar",
+    "depot": "Central",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "3",
+    "charismaId": "MARKO001",
+    "username": "marko",
+    "password": "marko123",
+    "name": "Marko Marković",
+    "role": "technician",
+    "depot": "Sever",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "4",
+    "charismaId": "JOVAN001",
+    "username": "jovan",
+    "password": "jovan123",
+    "name": "Jovan Jovanović",
+    "role": "technician",
+    "depot": "Jug",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+]
