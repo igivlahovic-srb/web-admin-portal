@@ -1,0 +1,50 @@
+[
+  {
+    "id": "1",
+    "code": "OP-001",
+    "name": "Čišćenje rezervoara",
+    "description": "Kompletno čišćenje rezervoara za vodu",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "2",
+    "code": "OP-002",
+    "name": "Zamena filtera",
+    "description": "Zamena filter uloška",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "3",
+    "code": "OP-003",
+    "name": "Provera slavina",
+    "description": "Provera funkcionalnosti slavina",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "4",
+    "code": "OP-004",
+    "name": "Provera sistema hlađenja",
+    "description": "Provera hladnjaka i kompresora",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "5",
+    "code": "OP-005",
+    "name": "Provera grejača",
+    "description": "Provera funkcije grejanja vode",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "6",
+    "code": "OP-006",
+    "name": "Zamena cevi",
+    "description": "Zamena silikonskih cevi",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+]
