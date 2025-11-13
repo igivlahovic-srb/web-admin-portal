@@ -40,7 +40,16 @@ export default function Navigation() {
     },
     {
       label: "Servisi",
-      path: "/dashboard/services",
+      children: [
+        {
+          label: "Istorija servisa",
+          path: "/dashboard/services",
+        },
+        {
+          label: "Aktivni serviseri",
+          path: "/dashboard/active-technicians",
+        },
+      ],
     },
     {
       label: "Radni dani",

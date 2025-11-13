@@ -10,6 +10,9 @@ export interface User {
   depot: string;
   isActive: boolean;
   createdAt: Date | string;
+  lastLoginAt?: Date | string; // Poslednje vreme logovanja
+  lastLoginDevice?: string; // Informacije o uređaju (npr. "iPhone 13, iOS 16.2")
+  isOnline?: boolean; // Da li je trenutno online
 }
 
 export interface SparePart {
