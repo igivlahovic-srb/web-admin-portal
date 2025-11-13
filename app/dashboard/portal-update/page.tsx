@@ -40,11 +40,14 @@ export default function PortalUpdatePage() {
       if (data.success) {
         setUpdateInfo(data.data);
       } else {
-        alert(data.message || "Greška pri proveri ažuriranja");
+        const errorMsg = data.error
+          ? `Greška: ${data.message}\n\nDetalji: ${data.error}\n\nPlatforma: ${data.platform || 'N/A'}`
+          : data.message || "Greška pri proveri ažuriranja";
+        alert(errorMsg);
       }
     } catch (error) {
       console.error("Error checking for updates:", error);
-      alert("Greška pri proveri ažuriranja");
+      alert("Greška pri proveri ažuriranja: " + (error instanceof Error ? error.message : "Unknown error"));
     } finally {
       setChecking(false);
     }
