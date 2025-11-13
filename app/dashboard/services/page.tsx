@@ -12,6 +12,8 @@ export default function ServicesPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "in_progress" | "completed" | "cancelled">("all");
   const [selectedTicket, setSelectedTicket] = useState<ServiceTicket | null>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancellationReason, setCancellationReason] = useState("");
   const [filters, setFilters] = useState({
     serviceNumber: "",
     deviceCode: "",
@@ -76,18 +78,25 @@ export default function ServicesPage() {
   };
 
   const handleCancelTicket = async (ticketId: string) => {
-    if (!confirm("Da li ste sigurni da želite poništiti ovaj servis? Ova akcija će označiti servis kao poništen.")) {
+    if (!cancellationReason.trim()) {
+      alert("Morate uneti razlog poništavanja servisa");
       return;
     }
 
     try {
       const response = await fetch(`/api/tickets/${ticketId}/cancel`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ reason: cancellationReason }),
       });
       const data = await response.json();
 
       if (data.success) {
         alert("Servis je uspešno poništen!");
+        setShowCancelModal(false);
+        setCancellationReason("");
         setSelectedTicket(null);
         loadTickets();
       } else {
@@ -618,6 +627,16 @@ export default function ServicesPage() {
                   </div>
                 </div>
               )}
+
+              {/* Cancellation Reason */}
+              {selectedTicket.status === "cancelled" && selectedTicket.cancellationReason && (
+                <div>
+                  <h4 className="font-bold text-red-900 mb-3">Razlog poništavanja</h4>
+                  <div className="bg-red-50 rounded-xl p-4 border border-red-200">
+                    <p className="text-red-800">{selectedTicket.cancellationReason}</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="p-6 border-t border-gray-200 bg-gray-50 sticky bottom-0">
@@ -632,7 +651,7 @@ export default function ServicesPage() {
                 )}
                 {selectedTicket.status === "in_progress" && (
                   <button
-                    onClick={() => handleCancelTicket(selectedTicket.id)}
+                    onClick={() => setShowCancelModal(true)}
                     className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors"
                   >
                     Poništi servis
@@ -643,6 +662,64 @@ export default function ServicesPage() {
                   className={`${selectedTicket.status === "completed" || selectedTicket.status === "in_progress" ? "flex-1" : "w-full"} bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 rounded-xl transition-colors`}
                 >
                   Zatvori
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Confirmation Modal */}
+      {showCancelModal && selectedTicket && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl max-w-md w-full">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-2xl font-bold text-gray-900">
+                Poništi servis
+              </h3>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="bg-red-50 rounded-xl p-4 border border-red-200">
+                <p className="text-red-800 text-sm">
+                  Da li ste sigurni da želite da poništite ovaj servis?
+                </p>
+                <p className="text-red-700 text-sm font-semibold mt-2">
+                  Servis: {selectedTicket.serviceNumber}
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Razlog poništavanja *
+                </label>
+                <textarea
+                  value={cancellationReason}
+                  onChange={(e) => setCancellationReason(e.target.value)}
+                  placeholder="Unesite razlog poništavanja servisa..."
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+                  rows={4}
+                />
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 bg-gray-50">
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowCancelModal(false);
+                    setCancellationReason("");
+                  }}
+                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-xl transition-colors"
+                >
+                  Odustani
+                </button>
+                <button
+                  onClick={() => handleCancelTicket(selectedTicket.id)}
+                  disabled={!cancellationReason.trim()}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Potvrdi poništavanje
                 </button>
               </div>
             </div>

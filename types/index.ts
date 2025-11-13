@@ -38,6 +38,7 @@ export interface ServiceTicket {
   operations: Operation[];
   spareParts: SparePart[];
   notes?: string;
+  cancellationReason?: string; // Razlog poništavanja servisa
 }
 
 export interface SyncData {

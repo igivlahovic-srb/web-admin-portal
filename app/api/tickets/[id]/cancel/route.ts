@@ -9,6 +9,17 @@ export async function POST(
 ) {
   try {
     const ticketId = params.id;
+    const body = await request.json();
+    const { reason } = body;
+
+    // Validate reason
+    if (!reason || !reason.trim()) {
+      return NextResponse.json(
+        { success: false, message: "Razlog poništavanja je obavezan" },
+        { status: 400 }
+      );
+    }
+
     const ticketsPath = join(process.cwd(), "data", "tickets.json");
 
     // Read current tickets
@@ -48,6 +59,7 @@ export async function POST(
       durationMinutes: Math.round(
         (new Date().getTime() - new Date(ticket.startTime).getTime()) / 60000
       ),
+      cancellationReason: reason.trim(),
     };
 
     // Write back to file
