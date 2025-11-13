@@ -16,8 +16,8 @@ export async function POST() {
 
     // Get new commit info
     const { stdout: commitHash } = await execAsync("git rev-parse HEAD");
-    const { stdout: commitMsg } = await execAsync('git log -1 --pretty=format:"%s"');
-    const { stdout: commitDate } = await execAsync('git log -1 --pretty=format:"%cd" --date=format:"%d.%m.%Y %H:%M"');
+    const { stdout: commitMsg } = await execAsync("git log -1 --format=%s");
+    const { stdout: commitDate } = await execAsync("git log -1 --format=%ci");
 
     return NextResponse.json({
       success: true,

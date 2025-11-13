@@ -18,10 +18,10 @@ export async function GET() {
     const remoteHash = remoteCommit.trim();
 
     // Get current commit message
-    const { stdout: commitMsg } = await execAsync('git log -1 --pretty=format:"%s"');
+    const { stdout: commitMsg } = await execAsync("git log -1 --format=%s");
 
     // Get last commit date
-    const { stdout: commitDate } = await execAsync('git log -1 --pretty=format:"%cd" --date=format:"%d.%m.%Y %H:%M"');
+    const { stdout: commitDate } = await execAsync("git log -1 --format=%ci");
 
     // Check if update is available
     const updateAvailable = currentHash !== remoteHash;
@@ -30,10 +30,10 @@ export async function GET() {
     let newCommitMsg = "";
     let newCommitDate = "";
     if (updateAvailable) {
-      const { stdout: newMsg } = await execAsync('git log origin/main -1 --pretty=format:"%s"');
+      const { stdout: newMsg } = await execAsync("git log origin/main -1 --format=%s");
       newCommitMsg = newMsg.trim();
 
-      const { stdout: newDate } = await execAsync('git log origin/main -1 --pretty=format:"%cd" --date=format:"%d.%m.%Y %H:%M"');
+      const { stdout: newDate } = await execAsync("git log origin/main -1 --format=%ci");
       newCommitDate = newDate.trim();
     }
 
