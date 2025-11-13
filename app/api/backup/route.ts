@@ -103,6 +103,20 @@ export async function GET(request: NextRequest) {
 // API endpoint za kreiranje novog backup-a
 export async function POST(request: NextRequest) {
   try {
+    // Check if running on Windows
+    const isWindows = process.platform === "win32";
+
+    if (isWindows) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Backup funkcionalnost nije dostupna na Windows okruženju. Koristite backup samo na Ubuntu production serveru.",
+          platform: process.platform,
+        },
+        { status: 501 } // 501 Not Implemented
+      );
+    }
+
     const { spawn } = require("child_process");
 
     // Try multiple possible locations for backup script

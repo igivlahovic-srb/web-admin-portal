@@ -5,6 +5,20 @@ import path from "path";
 // API endpoint za restore backup-a
 export async function POST(request: NextRequest) {
   try {
+    // Check if running on Windows
+    const isWindows = process.platform === "win32";
+
+    if (isWindows) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Restore funkcionalnost nije dostupna na Windows okruženju. Koristite restore samo na Ubuntu production serveru.",
+          platform: process.platform,
+        },
+        { status: 501 } // 501 Not Implemented
+      );
+    }
+
     const body = await request.json();
     const { backupFile } = body;
 
