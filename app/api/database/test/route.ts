@@ -8,15 +8,51 @@ import { query } from "../../../../lib/db";
  */
 export async function GET(request: NextRequest) {
   try {
-    // Check if database is configured
-    if (!process.env.DB_SERVER || !process.env.DB_NAME || !process.env.DB_USER || !process.env.DB_PASSWORD) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Database nije konfigurisan. Idite na Konfiguracija → Povezivanje sa Bazom i sačuvajte podešavanja.",
-        },
-        { status: 400 }
-      );
+    // Try to read .env.local directly to check if config exists
+    const fs = require('fs');
+    const path = require('path');
+    const envPath = path.join(process.cwd(), '.env.local');
+
+    let hasConfigFile = false;
+    let envContent = '';
+
+    try {
+      envContent = fs.readFileSync(envPath, 'utf-8');
+      hasConfigFile = envContent.includes('DB_SERVER=') &&
+                      envContent.includes('DB_NAME=') &&
+                      envContent.includes('DB_USER=') &&
+                      envContent.includes('DB_PASSWORD=');
+    } catch {
+      hasConfigFile = false;
+    }
+
+    // Check if database is configured in process.env
+    const isConfiguredInEnv = process.env.DB_SERVER &&
+                              process.env.DB_NAME &&
+                              process.env.DB_USER &&
+                              process.env.DB_PASSWORD;
+
+    if (!isConfiguredInEnv) {
+      if (hasConfigFile) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Database je konfigurisan u .env.local fajlu, ali Next.js server mora biti restartovan da učita nove vrednosti.",
+            needsRestart: true,
+            instruction: "Restartujte server: Ctrl+C pa opet 'npm run dev'",
+          },
+          { status: 400 }
+        );
+      } else {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Database nije konfigurisan. Idite na Konfiguracija → Povezivanje sa Bazom i sačuvajte podešavanja.",
+            needsRestart: false,
+          },
+          { status: 400 }
+        );
+      }
     }
 
     // Test query to check connection
