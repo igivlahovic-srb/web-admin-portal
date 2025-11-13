@@ -11,3 +11,4 @@ dist
 .vercel
 *.tgz
 .cache
+package-lock.json
