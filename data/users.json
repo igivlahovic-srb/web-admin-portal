@@ -1,0 +1,34 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "username": "admin",
+      "password": "admin123",
+      "firstName": "Administrator",
+      "lastName": "",
+      "role": "super_user",
+      "isActive": true,
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "username": "marko",
+      "password": "marko123",
+      "firstName": "Marko",
+      "lastName": "Marković",
+      "role": "serviser",
+      "isActive": true,
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "username": "jovan",
+      "password": "jovan123",
+      "firstName": "Jovan",
+      "lastName": "Jovanović",
+      "role": "serviser",
+      "isActive": true,
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    }
+  ]
+}
