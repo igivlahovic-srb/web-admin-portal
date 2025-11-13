@@ -14,6 +14,7 @@ export default function DashboardPage() {
   const [tickets, setTickets] = useState<ServiceTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [serverIp, setServerIp] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
@@ -40,6 +41,29 @@ export default function DashboardPage() {
     }, 1000);
 
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    // Get server IP address
+    const fetchServerIp = async () => {
+      try {
+        // Get IP from browser (client-side)
+        if (typeof window !== "undefined") {
+          const hostname = window.location.hostname;
+          if (hostname === "localhost" || hostname === "127.0.0.1") {
+            // Try to get local network IP
+            setServerIp("localhost");
+          } else {
+            setServerIp(hostname);
+          }
+        }
+      } catch (error) {
+        console.error("Error getting IP:", error);
+        setServerIp("N/A");
+      }
+    };
+
+    fetchServerIp();
   }, []);
 
   const loadData = async () => {
@@ -158,6 +182,11 @@ export default function DashboardPage() {
                       year: "numeric",
                     })}
                   </p>
+                  {serverIp && (
+                    <p className="text-xs text-blue-700 mt-2 font-mono">
+                      {serverIp}:{typeof window !== "undefined" ? window.location.port || "3000" : "3000"}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
