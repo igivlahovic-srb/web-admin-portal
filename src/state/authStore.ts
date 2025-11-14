@@ -4,7 +4,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { User } from "../types";
 import webAdminAPI from "../api/web-admin-sync";
 import { useSyncStore } from "./syncStore";
-import { useTwoFactorStore } from "./twoFactorStore";
 
 // Helper function to trigger auto sync if enabled
 const triggerAutoSync = async () => {
@@ -87,8 +86,8 @@ export const useAuthStore = create<AuthState>()(
         );
 
         if (user) {
-          // Check if 2FA is enabled for this user
-          const is2FAEnabled = useTwoFactorStore.getState().isTwoFactorEnabled(user.id);
+          // Check if 2FA is enabled for this user (set by admin from web portal)
+          const is2FAEnabled = user.twoFactorEnabled === true;
 
           if (is2FAEnabled) {
             // Store user ID for pending 2FA verification

@@ -13,6 +13,9 @@ export interface User {
   workdayClosedAt?: Date | string;
   workdayOpenedBy?: string; // User ID who reopened the workday
   workdayReopenReason?: string; // Reason for reopening
+  twoFactorEnabled?: boolean; // 2FA enabled by admin
+  twoFactorEnabledAt?: Date | string; // When 2FA was enabled
+  twoFactorEnabledBy?: string; // Admin who enabled it
 }
 
 export interface SparePart {

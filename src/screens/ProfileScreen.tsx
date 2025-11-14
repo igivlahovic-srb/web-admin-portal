@@ -25,10 +25,8 @@ export default function ProfileScreen() {
   const [syncing, setSyncing] = useState(false);
   const [showCloseWorkdayModal, setShowCloseWorkdayModal] = useState(false);
   const [isClosingWorkday, setIsClosingWorkday] = useState(false);
-  const [showDisable2FAModal, setShowDisable2FAModal] = useState(false);
 
-  const isTwoFactorEnabled = useTwoFactorStore((s) => s.isTwoFactorEnabled(user?.id || ""));
-  const disableTwoFactor = useTwoFactorStore((s) => s.disableTwoFactor);
+  const isTwoFactorEnabled = user?.twoFactorEnabled === true;
   const getBackupCodes = useTwoFactorStore((s) => s.getBackupCodes);
   const regenerateBackupCodes = useTwoFactorStore((s) => s.regenerateBackupCodes);
 
@@ -215,30 +213,6 @@ export default function ProfileScreen() {
     } finally {
       setIsClosingWorkday(false);
     }
-  };
-
-  const handleEnable2FA = () => {
-    navigation.navigate("TwoFactorSetup");
-  };
-
-  const handleDisable2FA = () => {
-    if (!user) return;
-
-    Alert.alert(
-      "Onemogući 2FA",
-      "Da li ste sigurni da želite da onemogućite dvofaktorsku autentifikaciju?",
-      [
-        { text: "Otkaži", style: "cancel" },
-        {
-          text: "Onemogući",
-          style: "destructive",
-          onPress: () => {
-            disableTwoFactor(user.id);
-            Alert.alert("Uspeh", "Dvofaktorska autentifikacija je onemogućena.");
-          },
-        },
-      ]
-    );
   };
 
   const handleViewBackupCodes = () => {
@@ -434,45 +408,49 @@ export default function ProfileScreen() {
             </View>
 
             {isTwoFactorEnabled ? (
-              <View className="gap-2">
-                <Pressable
-                  onPress={handleViewBackupCodes}
-                  className="bg-purple-50 rounded-xl px-4 py-3 flex-row items-center justify-center gap-2 active:opacity-70"
-                >
-                  <Ionicons name="eye-outline" size={18} color="#9333EA" />
-                  <Text className="text-purple-700 text-sm font-semibold">
-                    Prikaži backup kodove
+              <>
+                <View className="bg-blue-50 rounded-xl p-3 mb-2">
+                  <Text className="text-blue-800 text-xs leading-5">
+                    <Ionicons name="information-circle" size={14} color="#3B82F6" />
+                    {" "}Pri svakom logovanju ćete morati da unesete 6-cifreni kod iz vaše authenticator aplikacije.
                   </Text>
-                </Pressable>
-                <Pressable
-                  onPress={handleRegenerateBackupCodes}
-                  className="bg-blue-50 rounded-xl px-4 py-3 flex-row items-center justify-center gap-2 active:opacity-70"
-                >
-                  <Ionicons name="refresh-outline" size={18} color="#3B82F6" />
-                  <Text className="text-blue-700 text-sm font-semibold">
-                    Regeneriši backup kodove
+                </View>
+
+                <View className="gap-2">
+                  <Pressable
+                    onPress={handleViewBackupCodes}
+                    className="bg-purple-50 rounded-xl px-4 py-3 flex-row items-center justify-center gap-2 active:opacity-70"
+                  >
+                    <Ionicons name="eye-outline" size={18} color="#9333EA" />
+                    <Text className="text-purple-700 text-sm font-semibold">
+                      Prikaži backup kodove
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={handleRegenerateBackupCodes}
+                    className="bg-blue-50 rounded-xl px-4 py-3 flex-row items-center justify-center gap-2 active:opacity-70"
+                  >
+                    <Ionicons name="refresh-outline" size={18} color="#3B82F6" />
+                    <Text className="text-blue-700 text-sm font-semibold">
+                      Regeneriši backup kodove
+                    </Text>
+                  </Pressable>
+                </View>
+
+                <View className="bg-amber-50 rounded-xl p-3 mt-2 border border-amber-200">
+                  <Text className="text-amber-800 text-xs leading-5">
+                    <Ionicons name="lock-closed" size={14} color="#F59E0B" />
+                    {" "}Samo administrator može onemogućiti 2FA sa web portala.
                   </Text>
-                </Pressable>
-                <Pressable
-                  onPress={handleDisable2FA}
-                  className="bg-red-50 rounded-xl px-4 py-3 flex-row items-center justify-center gap-2 active:opacity-70"
-                >
-                  <Ionicons name="close-circle-outline" size={18} color="#EF4444" />
-                  <Text className="text-red-600 text-sm font-semibold">
-                    Onemogući 2FA
-                  </Text>
-                </Pressable>
-              </View>
+                </View>
+              </>
             ) : (
-              <Pressable
-                onPress={handleEnable2FA}
-                className="bg-purple-500 rounded-xl px-4 py-3 flex-row items-center justify-center gap-2 active:opacity-70"
-              >
-                <Ionicons name="shield-checkmark-outline" size={18} color="#FFFFFF" />
-                <Text className="text-white text-sm font-semibold">
-                  Omogući 2FA
+              <View className="bg-gray-50 rounded-xl p-3">
+                <Text className="text-gray-600 text-xs text-center leading-5">
+                  <Ionicons name="information-circle" size={14} color="#6B7280" />
+                  {" "}2FA trenutno nije omogućena za vaš nalog. Kontaktirajte administratora da omogući 2FA sa web portala.
                 </Text>
-              </Pressable>
+              </View>
             )}
           </View>
 
