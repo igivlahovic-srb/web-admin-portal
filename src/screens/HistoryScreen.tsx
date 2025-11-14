@@ -13,7 +13,7 @@ import { RootStackParamList } from "../navigation/RootNavigator";
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function HistoryScreen() {
-  const navigation = useNavigation<NavigationProp>();
+  const navigation = useNavigation() as NavigationProp;
   const tickets = useServiceStore((s) => s.tickets);
   const setCurrentTicket = useServiceStore((s) => s.setCurrentTicket);
   const user = useAuthStore((s) => s.user);
