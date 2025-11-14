@@ -20,7 +20,7 @@
 import { Alert, Linking } from 'react-native';
 import * as Application from 'expo-application';
 
-const WEB_PORTAL_URL = 'http://appserver.lafantanasrb.local'; // Nginx server (port 80)
+const WEB_PORTAL_URL = 'https://appserver.lafantanasrb.local'; // Nginx server (HTTPS with self-signed cert)
 
 export interface VersionInfo {
   hasApk: boolean;
