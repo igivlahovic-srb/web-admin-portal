@@ -12,17 +12,32 @@ Profesionalna mobilna aplikacija za servisiranje i održavanje water aparata sa 
 
 ### 🚀 Quick Deploy na Ubuntu Server
 
-```bash
-# 1. Kopiraj web-admin folder na server
-scp -r web-admin root@YOUR_SERVER_IP:/root/
+**Automatski deployment script je sada dostupan!** Jedan script instalira sve (Node.js, Bun, PM2, Nginx, web portal).
 
-# 2. Pokreni automatski deployment
+#### **Metod 1: Automatski Script (Preporučeno)** ⚡
+
+```bash
+# 1. Prebacite script na server
+scp DEPLOY_WEB_PORTAL_UBUNTU.sh root@YOUR_SERVER_IP:/root/
+
+# 2. Konektujte se i pokrenite
 ssh root@YOUR_SERVER_IP
-cd /root/web-admin
-sudo bash DEPLOY_TO_UBUNTU.sh
+chmod +x DEPLOY_WEB_PORTAL_UBUNTU.sh
+sudo bash DEPLOY_WEB_PORTAL_UBUNTU.sh
 ```
 
-**Portal dostupan na:** `https://admin.lafantanasrb.local`
+**Gotovo!** Script automatski povlači kod sa GitHub-a i konfiguriše sve.
+
+#### **Metod 2: Direktan Download**
+
+```bash
+ssh root@YOUR_SERVER_IP
+wget https://raw.githubusercontent.com/igivlahovic-srb/web-admin-portal/main/DEPLOY_WEB_PORTAL_UBUNTU.sh
+chmod +x DEPLOY_WEB_PORTAL_UBUNTU.sh
+sudo bash DEPLOY_WEB_PORTAL_UBUNTU.sh
+```
+
+**Portal dostupan na:** `http://YOUR_SERVER_IP`
 
 **Login:** `admin` / `admin123`
 
@@ -34,8 +49,13 @@ sudo bash DEPLOY_TO_UBUNTU.sh
 - ✅ Nginx reverse proxy sa SSL
 - ✅ PM2 auto-start pri boot-u
 - ✅ Mobile app sinhronizacija
+- ✅ Automatski pull sa GitHub-a
 
-**📚 Dokumentacija:** `web-admin/QUICK_START.md` i `web-admin/UBUNTU_DEPLOYMENT_GUIDE.md`
+**📚 Dokumentacija:**
+- `DEPLOYMENT_UPUTSTVO.md` - Kompletan deployment guide
+- `DEPLOY_WEB_PORTAL_UBUNTU.sh` - Automatski script
+
+**GitHub Repo:** https://github.com/igivlahovic-srb/web-admin-portal
 
 ---
 
