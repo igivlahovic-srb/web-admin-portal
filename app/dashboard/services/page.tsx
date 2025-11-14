@@ -1,0 +1,731 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { User, ServiceTicket } from "../../../types";
+import { format } from "date-fns";
+import Navigation from "../../../components/Navigation";
+
+export default function ServicesPage() {
+  const [user, setUser] = useState<Omit<User, "password"> | null>(null);
+  const [tickets, setTickets] = useState<ServiceTicket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "in_progress" | "completed" | "cancelled">("all");
+  const [selectedTicket, setSelectedTicket] = useState<ServiceTicket | null>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancellationReason, setCancellationReason] = useState("");
+  const [filters, setFilters] = useState({
+    serviceNumber: "",
+    deviceCode: "",
+    technician: "",
+    status: "",
+  });
+  const router = useRouter();
+
+  useEffect(() => {
+    const userData = sessionStorage.getItem("admin-user");
+    if (!userData) {
+      router.push("/");
+      return;
+    }
+
+    const parsedUser = JSON.parse(userData);
+    if (parsedUser.role !== "super_user" && parsedUser.role !== "gospodar") {
+      router.push("/");
+      return;
+    }
+
+    setUser(parsedUser);
+    loadTickets();
+  }, [router]);
+
+  const loadTickets = async () => {
+    try {
+      const ticketsRes = await fetch("/api/sync/tickets");
+      const ticketsData = await ticketsRes.json();
+      if (ticketsData.success && ticketsData.data?.tickets) {
+        setTickets(ticketsData.data.tickets);
+      }
+    } catch (error) {
+      console.error("Error loading tickets:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReopenTicket = async (ticketId: string) => {
+    if (!confirm("Da li ste sigurni da želite ponovo da otvorite ovaj servis?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/tickets/${ticketId}/reopen`, {
+        method: "POST",
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Servis je uspešno ponovo otvoren!");
+        setSelectedTicket(null);
+        loadTickets();
+      } else {
+        alert("Greška: " + (data.message || "Nije moguće ponovo otvoriti servis"));
+      }
+    } catch (error) {
+      console.error("Error reopening ticket:", error);
+      alert("Greška pri ponovnom otvaranju servisa");
+    }
+  };
+
+  const handleCancelTicket = async (ticketId: string) => {
+    if (!cancellationReason.trim()) {
+      alert("Morate uneti razlog poništavanja servisa");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/tickets/${ticketId}/cancel`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ reason: cancellationReason }),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Servis je uspešno poništen!");
+        setShowCancelModal(false);
+        setCancellationReason("");
+        setSelectedTicket(null);
+        loadTickets();
+      } else {
+        alert("Greška: " + (data.message || "Nije moguće poništiti servis"));
+      }
+    } catch (error) {
+      console.error("Error cancelling ticket:", error);
+      alert("Greška pri poništavanju servisa");
+    }
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("admin-user");
+    router.push("/");
+  };
+
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Učitavanje...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const filteredTickets = tickets.filter((t) => {
+    // Status filter from buttons
+    if (filter === "in_progress" && t.status !== "in_progress") return false;
+    if (filter === "completed" && t.status !== "completed") return false;
+    if (filter === "cancelled" && t.status !== "cancelled") return false;
+
+    // Column filters
+    if (filters.serviceNumber && !t.serviceNumber.toLowerCase().includes(filters.serviceNumber.toLowerCase())) return false;
+    if (filters.deviceCode && !t.deviceCode.toLowerCase().includes(filters.deviceCode.toLowerCase())) return false;
+    if (filters.technician && !t.technicianName.toLowerCase().includes(filters.technician.toLowerCase())) return false;
+    if (filters.status && t.status !== filters.status) return false;
+
+    return true;
+  });
+
+  const activeCount = tickets.filter((t) => t.status === "in_progress").length;
+  const completedCount = tickets.filter((t) => t.status === "completed").length;
+  const cancelledCount = tickets.filter((t) => t.status === "cancelled").length;
+  const totalOperations = tickets.reduce((sum, t) => sum + t.operations.length, 0);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center p-2 shadow-md">
+                <img
+                  src="/lafantana-logo.svg"
+                  alt="La Fantana WHS Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  La Fantana WHS Admin
+                </h1>
+                <p className="text-sm text-gray-600">Istorija servisa</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-sm font-semibold text-gray-900">
+                  {user.name}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {user.role === "super_user" ? "Administrator" : user.role === "gospodar" ? "Gospodar" : "Korisnik"}
+                </p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors"
+              >
+                Odjavi se
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Navigation */}
+      <Navigation />
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <h3 className="text-gray-600 font-medium mb-2">Ukupno servisa</h3>
+            <p className="text-4xl font-bold text-gray-900">{tickets.length}</p>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <h3 className="text-gray-600 font-medium mb-2">U toku</h3>
+            <p className="text-4xl font-bold text-yellow-600">{activeCount}</p>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <h3 className="text-gray-600 font-medium mb-2">Završeno</h3>
+            <p className="text-4xl font-bold text-green-600">{completedCount}</p>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <h3 className="text-gray-600 font-medium mb-2">Poništeno</h3>
+            <p className="text-4xl font-bold text-red-600">{cancelledCount}</p>
+          </div>
+        </div>
+
+        {/* Services Table */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-900">
+                Servisni nalozi
+              </h2>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setFilter("all")}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    filter === "all"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  Svi ({tickets.length})
+                </button>
+                <button
+                  onClick={() => setFilter("in_progress")}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    filter === "in_progress"
+                      ? "bg-yellow-600 text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  U toku ({activeCount})
+                </button>
+                <button
+                  onClick={() => setFilter("completed")}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    filter === "completed"
+                      ? "bg-green-600 text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  Završeni ({completedCount})
+                </button>
+                <button
+                  onClick={() => setFilter("cancelled")}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    filter === "cancelled"
+                      ? "bg-red-600 text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  Poništeni ({cancelledCount})
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {filteredTickets.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="inline-block p-4 bg-gray-100 rounded-full mb-4">
+                <svg
+                  className="w-12 h-12 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <p className="text-gray-600 font-medium mb-2">Nema servisa</p>
+              <p className="text-sm text-gray-500">
+                Sinhronizujte podatke iz mobilne aplikacije
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              {/* Filters */}
+              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <div className="text-sm text-gray-600 mb-3">Filtriranje</div>
+                <div className="grid grid-cols-4 gap-3">
+                  <input
+                    type="text"
+                    placeholder="Servis No."
+                    value={filters.serviceNumber}
+                    onChange={(e) => setFilters({ ...filters, serviceNumber: e.target.value })}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Šifra aparata"
+                    value={filters.deviceCode}
+                    onChange={(e) => setFilters({ ...filters, deviceCode: e.target.value })}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Serviser"
+                    value={filters.technician}
+                    onChange={(e) => setFilters({ ...filters, technician: e.target.value })}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <select
+                    value={filters.status}
+                    onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Svi statusi</option>
+                    <option value="in_progress">U toku</option>
+                    <option value="completed">Završeno</option>
+                    <option value="cancelled">Poništeno</option>
+                  </select>
+                </div>
+                {(filters.serviceNumber || filters.deviceCode || filters.technician || filters.status) && (
+                  <button
+                    onClick={() => setFilters({ serviceNumber: "", deviceCode: "", technician: "", status: "" })}
+                    className="mt-3 text-sm text-blue-600 hover:text-blue-700"
+                  >
+                    ✕ Resetuj filtere
+                  </button>
+                )}
+              </div>
+
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200 bg-gray-50">
+                    <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
+                      Servis No.
+                    </th>
+                    <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
+                      Šifra aparata
+                    </th>
+                    <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
+                      Serviser
+                    </th>
+                    <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
+                      Početak
+                    </th>
+                    <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
+                      Završetak
+                    </th>
+                    <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
+                      Trajanje
+                    </th>
+                    <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
+                      Status
+                    </th>
+                    <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
+                      Operacije
+                    </th>
+                    <th className="text-left py-3 px-6 text-sm font-semibold text-gray-600">
+                      Akcije
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredTickets.map((ticket) => {
+                    // Calculate duration in minutes
+                    let durationMinutes = ticket.durationMinutes;
+                    if (!durationMinutes && ticket.endTime) {
+                      const start = new Date(ticket.startTime);
+                      const end = new Date(ticket.endTime);
+                      durationMinutes = Math.round((end.getTime() - start.getTime()) / 60000);
+                    }
+
+                    return (
+                      <tr
+                        key={ticket.id}
+                        className="border-b border-gray-100 hover:bg-gray-50"
+                      >
+                        <td className="py-4 px-6 text-blue-600 font-semibold text-sm">
+                          {ticket.serviceNumber}
+                        </td>
+                        <td className="py-4 px-6 font-medium text-gray-900">
+                          {ticket.deviceCode}
+                        </td>
+                        <td className="py-4 px-6 text-gray-700">
+                          {ticket.technicianName}
+                        </td>
+                        <td className="py-4 px-6 text-gray-600 text-sm">
+                          {format(new Date(ticket.startTime), "dd.MM.yyyy HH:mm")}
+                        </td>
+                        <td className="py-4 px-6 text-gray-600 text-sm">
+                          {ticket.endTime
+                            ? format(new Date(ticket.endTime), "dd.MM.yyyy HH:mm")
+                            : "-"}
+                        </td>
+                        <td className="py-4 px-6 text-gray-600 text-sm font-medium">
+                          {durationMinutes ? `${durationMinutes} min` : "-"}
+                        </td>
+                        <td className="py-4 px-6">
+                          {ticket.status === "completed" ? (
+                            <span className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                              Završeno
+                            </span>
+                          ) : ticket.status === "cancelled" ? (
+                            <span className="inline-block px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">
+                              Poništeno
+                            </span>
+                          ) : (
+                            <span className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">
+                              U toku
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-4 px-6 text-gray-600 text-sm">
+                          {ticket.operations.length}
+                        </td>
+                        <td className="py-4 px-6">
+                          <button
+                            onClick={() => setSelectedTicket(ticket)}
+                            className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                          >
+                            Detalji
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Detail Modal */}
+      {selectedTicket && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 sticky top-0 bg-white">
+              <div className="flex items-center justify-between">
+                <h3 className="text-2xl font-bold text-gray-900">
+                  Detalji servisa
+                </h3>
+                <button
+                  onClick={() => setSelectedTicket(null)}
+                  className="p-2 hover:bg-gray-100 rounded-xl"
+                >
+                  <svg
+                    className="w-6 h-6 text-gray-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Basic Info */}
+              <div className="bg-gray-50 rounded-2xl p-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Servis No.</p>
+                    <p className="font-bold text-blue-600">
+                      {selectedTicket.serviceNumber}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Šifra aparata</p>
+                    <p className="font-bold text-gray-900">
+                      {selectedTicket.deviceCode}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Status</p>
+                    {selectedTicket.status === "completed" ? (
+                      <span className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                        Završeno
+                      </span>
+                    ) : selectedTicket.status === "cancelled" ? (
+                      <span className="inline-block px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-semibold">
+                        Poništeno
+                      </span>
+                    ) : (
+                      <span className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold">
+                        U toku
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Serviser</p>
+                    <p className="font-medium text-gray-900">
+                      {selectedTicket.technicianName}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Vreme početka</p>
+                    <p className="font-medium text-gray-900">
+                      {format(
+                        new Date(selectedTicket.startTime),
+                        "dd.MM.yyyy HH:mm"
+                      )}
+                    </p>
+                  </div>
+                  {selectedTicket.endTime && (
+                    <>
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">Vreme završetka</p>
+                        <p className="font-medium text-gray-900">
+                          {format(
+                            new Date(selectedTicket.endTime),
+                            "dd.MM.yyyy HH:mm"
+                          )}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">Trajanje</p>
+                        <p className="font-bold text-blue-600">
+                          {(() => {
+                            const duration = selectedTicket.durationMinutes ||
+                              Math.round((new Date(selectedTicket.endTime).getTime() -
+                                new Date(selectedTicket.startTime).getTime()) / 60000);
+                            return `${duration} minuta`;
+                          })()}
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Operations */}
+              <div>
+                <h4 className="font-bold text-gray-900 mb-3">
+                  Obavljene operacije ({selectedTicket.operations.length})
+                </h4>
+                <div className="space-y-2">
+                  {selectedTicket.operations.map((op) => (
+                    <div
+                      key={op.id}
+                      className="bg-blue-50 rounded-xl p-3 flex items-start gap-3"
+                    >
+                      <svg
+                        className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <div>
+                        <p className="font-medium text-gray-900">{op.name}</p>
+                        {op.description && (
+                          <p className="text-sm text-gray-600 mt-1">
+                            {op.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Spare Parts */}
+              {selectedTicket.spareParts.length > 0 && (
+                <div>
+                  <h4 className="font-bold text-gray-900 mb-3">
+                    Utrošeni rezervni delovi ({selectedTicket.spareParts.length})
+                  </h4>
+                  <div className="space-y-2">
+                    {selectedTicket.spareParts.map((part) => (
+                      <div
+                        key={part.id}
+                        className="bg-amber-50 rounded-xl p-3 flex items-center justify-between"
+                      >
+                        <div className="flex items-center gap-3">
+                          <svg
+                            className="w-5 h-5 text-amber-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                            />
+                          </svg>
+                          <p className="font-medium text-gray-900">{part.name}</p>
+                        </div>
+                        <span className="px-3 py-1 bg-amber-100 text-amber-900 rounded-lg text-sm font-semibold">
+                          {part.quantity}x
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Notes */}
+              {selectedTicket.notes && (
+                <div>
+                  <h4 className="font-bold text-gray-900 mb-3">Napomene</h4>
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <p className="text-gray-700">{selectedTicket.notes}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Cancellation Reason */}
+              {selectedTicket.status === "cancelled" && selectedTicket.cancellationReason && (
+                <div>
+                  <h4 className="font-bold text-red-900 mb-3">Razlog poništavanja</h4>
+                  <div className="bg-red-50 rounded-xl p-4 border border-red-200">
+                    <p className="text-red-800">{selectedTicket.cancellationReason}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t border-gray-200 bg-gray-50 sticky bottom-0">
+              <div className="flex gap-3">
+                {selectedTicket.status === "completed" && (
+                  <button
+                    onClick={() => handleReopenTicket(selectedTicket.id)}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors"
+                  >
+                    Ponovo otvori servis
+                  </button>
+                )}
+                {selectedTicket.status === "in_progress" && (
+                  <button
+                    onClick={() => setShowCancelModal(true)}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors"
+                  >
+                    Poništi servis
+                  </button>
+                )}
+                <button
+                  onClick={() => setSelectedTicket(null)}
+                  className={`${selectedTicket.status === "completed" || selectedTicket.status === "in_progress" ? "flex-1" : "w-full"} bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 rounded-xl transition-colors`}
+                >
+                  Zatvori
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Confirmation Modal */}
+      {showCancelModal && selectedTicket && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl max-w-md w-full">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-2xl font-bold text-gray-900">
+                Poništi servis
+              </h3>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="bg-red-50 rounded-xl p-4 border border-red-200">
+                <p className="text-red-800 text-sm">
+                  Da li ste sigurni da želite da poništite ovaj servis?
+                </p>
+                <p className="text-red-700 text-sm font-semibold mt-2">
+                  Servis: {selectedTicket.serviceNumber}
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Razlog poništavanja *
+                </label>
+                <textarea
+                  value={cancellationReason}
+                  onChange={(e) => setCancellationReason(e.target.value)}
+                  placeholder="Unesite razlog poništavanja servisa..."
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+                  rows={4}
+                />
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 bg-gray-50">
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowCancelModal(false);
+                    setCancellationReason("");
+                  }}
+                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-xl transition-colors"
+                >
+                  Odustani
+                </button>
+                <button
+                  onClick={() => handleCancelTicket(selectedTicket.id)}
+                  disabled={!cancellationReason.trim()}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Potvrdi poništavanje
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
